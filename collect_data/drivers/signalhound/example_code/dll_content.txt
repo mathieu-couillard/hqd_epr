@@ -1,0 +1,197 @@
+Machine: 34404
+Number of Sections: 8
+Timestamp: 1661456272
+Characteristics: 8226
+
+Exported functions:
+  Function Name: ?saAdjustTimebase@@YA?AW4saStatus@@HN@Z, Address: 0x4ad8a0
+  Function Name: ?saGetTimebaseCorrection@@YA?AW4saStatus@@HPEAN@Z, Address: 0x4ad850
+  Function Name: ?saHasCorrections@@YA?AW4saStatus@@HAEA_N@Z, Address: 0x4ad980
+  Function Name: ?saSetTimebaseCorrection@@YA?AW4saStatus@@HN@Z, Address: 0x4ad810
+  Function Name: saAbort, Address: 0x4abfc0
+  Function Name: saAttachTg, Address: 0x4ad010
+  Function Name: saCloseDevice, Address: 0x4ab3a0
+  Function Name: saCloseDeviceWithCycle, Address: 0x4ab470
+  Function Name: saConfigAcquisition, Address: 0x4ab690
+  Function Name: saConfigAudio, Address: 0x4abbd0
+  Function Name: saConfigCenterSpan, Address: 0x4ab710
+  Function Name: saConfigGainAtten, Address: 0x4ab840
+  Function Name: saConfigIFOutput, Address: 0x4ad550
+  Function Name: saConfigIQ, Address: 0x4aba40
+  Function Name: saConfigLevel, Address: 0x4ab7c0
+  Function Name: saConfigProcUnits, Address: 0x4ab9f0
+  Function Name: saConfigRBWShape, Address: 0x4ab9a0
+  Function Name: saConfigRealTime, Address: 0x4abc70
+  Function Name: saConfigRealTimeOverlap, Address: 0x4abd10
+  Function Name: saConfigSweepCoupling, Address: 0x4ab900
+  Function Name: saConfigTgSweep, Address: 0x4ad270
+  Function Name: saGetAPIVersion, Address: 0x4ad610
+  Function Name: saGetAudio, Address: 0x4acd40
+  Function Name: saGetDeviceType, Address: 0x4ab650
+  Function Name: saGetErrorString, Address: 0x4ad630
+  Function Name: saGetFirmwareString, Address: 0x4ab5f0
+  Function Name: saGetIQ, Address: 0x4acbf0
+  Function Name: saGetIQData, Address: 0x4acc40
+  Function Name: saGetIQDataUnpacked, Address: 0x4acc90
+  Function Name: saGetIQ_32f, Address: 0x4aca90
+  Function Name: saGetIQ_64f, Address: 0x4acb00
+  Function Name: saGetPartialSweep_32f, Address: 0x4ac600
+  Function Name: saGetPartialSweep_64f, Address: 0x4ac7c0
+  Function Name: saGetProductID, Address: 0x4ad620
+  Function Name: saGetRealTimeFrame, Address: 0x4ac980
+  Function Name: saGetSerialNumber, Address: 0x4ab5b0
+  Function Name: saGetSerialNumberList, Address: 0x4ab0b0
+  Function Name: saGetSweep_32f, Address: 0x4ac1e0
+  Function Name: saGetSweep_64f, Address: 0x4ac3f0
+  Function Name: saGetTgFreqAmpl, Address: 0x4ad4e0
+  Function Name: saInitiate, Address: 0x4abf70
+  Function Name: saIsTgAttached, Address: 0x4ad220
+  Function Name: saOpenDevice, Address: 0x4ab310
+  Function Name: saOpenDeviceBySerialNumber, Address: 0x4ab300
+  Function Name: saOpenDeviceBySerialNumberWithoutCycle, Address: 0x4ab300
+  Function Name: saPreset, Address: 0x4ab470
+  Function Name: saQueryDiagnostics, Address: 0x4acec0
+  Function Name: saQueryRealTimeFrameInfo, Address: 0x4ac130
+  Function Name: saQueryRealTimePoi, Address: 0x4ac190
+  Function Name: saQueryStreamInfo, Address: 0x4ac070
+  Function Name: saQuerySweepInfo, Address: 0x4abff0
+  Function Name: saQueryTemperature, Address: 0x4ace10
+  Function Name: saSelfTest, Address: 0x4ad580
+  Function Name: saSetCalFilePath, Address: 0x4ab550
+  Function Name: saSetTg, Address: 0x4ad380
+  Function Name: saSetTgReference, Address: 0x4ad3d0
+  Function Name: saSetTimebase, Address: 0x4abd80
+  Function Name: saStoreTgThru, Address: 0x4ad2e0
+
+Imported functions:
+  From DLL: KERNEL32.dll
+    Function Name: GetModuleHandleW, Address: 0x1806cf080
+    Function Name: GetProcAddress, Address: 0x1806cf088
+    Function Name: RtlCaptureContext, Address: 0x1806cf090
+    Function Name: RtlLookupFunctionEntry, Address: 0x1806cf098
+    Function Name: RtlVirtualUnwind, Address: 0x1806cf0a0
+    Function Name: UnhandledExceptionFilter, Address: 0x1806cf0a8
+    Function Name: CreateEventW, Address: 0x1806cf0b0
+    Function Name: GetCurrentProcess, Address: 0x1806cf0b8
+    Function Name: TerminateProcess, Address: 0x1806cf0c0
+    Function Name: IsProcessorFeaturePresent, Address: 0x1806cf0c8
+    Function Name: IsDebuggerPresent, Address: 0x1806cf0d0
+    Function Name: QueryPerformanceCounter, Address: 0x1806cf0d8
+    Function Name: EnterCriticalSection, Address: 0x1806cf0e0
+    Function Name: LeaveCriticalSection, Address: 0x1806cf0e8
+    Function Name: InitializeCriticalSectionAndSpinCount, Address: 0x1806cf0f0
+    Function Name: DeleteCriticalSection, Address: 0x1806cf0f8
+    Function Name: ResetEvent, Address: 0x1806cf100
+    Function Name: GetTickCount, Address: 0x1806cf108
+    Function Name: CreateDirectoryA, Address: 0x1806cf110
+    Function Name: GetFileAttributesA, Address: 0x1806cf118
+    Function Name: CreateDirectoryW, Address: 0x1806cf120
+    Function Name: CreateEventA, Address: 0x1806cf128
+    Function Name: CloseHandle, Address: 0x1806cf130
+    Function Name: SetEvent, Address: 0x1806cf138
+    Function Name: WaitForSingleObject, Address: 0x1806cf140
+    Function Name: SetThreadPriority, Address: 0x1806cf148
+    Function Name: SetUnhandledExceptionFilter, Address: 0x1806cf150
+    Function Name: Sleep, Address: 0x1806cf158
+    Function Name: GetCurrentProcessId, Address: 0x1806cf160
+    Function Name: GetCurrentThreadId, Address: 0x1806cf168
+    Function Name: GetSystemTimeAsFileTime, Address: 0x1806cf170
+    Function Name: DisableThreadLibraryCalls, Address: 0x1806cf178
+    Function Name: InitializeSListHead, Address: 0x1806cf180
+    Function Name: WaitForSingleObjectEx, Address: 0x1806cf188
+  From DLL: SHELL32.dll
+    Function Name: SHGetKnownFolderPath, Address: 0x1806cf1f0
+  From DLL: MSVCP140.dll
+    Function Name: _Mtx_unlock, Address: 0x1806cf198
+    Function Name: _Mtx_init_in_situ, Address: 0x1806cf1a0
+    Function Name: _Mtx_lock, Address: 0x1806cf1a8
+    Function Name: _Mtx_destroy_in_situ, Address: 0x1806cf1b0
+    Function Name: _Thrd_id, Address: 0x1806cf1b8
+    Function Name: ?_Throw_C_error@std@@YAXH@Z, Address: 0x1806cf1c0
+    Function Name: _Thrd_join, Address: 0x1806cf1c8
+    Function Name: ?_Xlength_error@std@@YAXPEBD@Z, Address: 0x1806cf1d0
+    Function Name: ?_Throw_Cpp_error@std@@YAXH@Z, Address: 0x1806cf1d8
+    Function Name: _Cnd_do_broadcast_at_thread_exit, Address: 0x1806cf1e0
+  From DLL: WININET.dll
+    Function Name: InternetOpenA, Address: 0x1806cf280
+    Function Name: InternetReadFile, Address: 0x1806cf288
+    Function Name: InternetCloseHandle, Address: 0x1806cf290
+    Function Name: InternetOpenUrlA, Address: 0x1806cf298
+  From DLL: FTD2XX.dll
+    Function Name: Unnamed, Address: 0x1806cf000
+    Function Name: Unnamed, Address: 0x1806cf008
+    Function Name: Unnamed, Address: 0x1806cf010
+    Function Name: Unnamed, Address: 0x1806cf018
+    Function Name: Unnamed, Address: 0x1806cf020
+    Function Name: Unnamed, Address: 0x1806cf028
+    Function Name: Unnamed, Address: 0x1806cf030
+    Function Name: Unnamed, Address: 0x1806cf038
+    Function Name: Unnamed, Address: 0x1806cf040
+    Function Name: Unnamed, Address: 0x1806cf048
+    Function Name: Unnamed, Address: 0x1806cf050
+    Function Name: Unnamed, Address: 0x1806cf058
+    Function Name: Unnamed, Address: 0x1806cf060
+    Function Name: Unnamed, Address: 0x1806cf068
+    Function Name: Unnamed, Address: 0x1806cf070
+  From DLL: VCRUNTIME140_1.dll
+    Function Name: __CxxFrameHandler4, Address: 0x1806cf270
+  From DLL: VCRUNTIME140.dll
+    Function Name: __std_type_info_destroy_list, Address: 0x1806cf200
+    Function Name: memset, Address: 0x1806cf208
+    Function Name: memmove, Address: 0x1806cf210
+    Function Name: _CxxThrowException, Address: 0x1806cf218
+    Function Name: memcpy, Address: 0x1806cf220
+    Function Name: __RTDynamicCast, Address: 0x1806cf228
+    Function Name: __C_specific_handler, Address: 0x1806cf230
+    Function Name: _purecall, Address: 0x1806cf238
+    Function Name: __current_exception, Address: 0x1806cf240
+    Function Name: __std_terminate, Address: 0x1806cf248
+    Function Name: __std_exception_destroy, Address: 0x1806cf250
+    Function Name: __std_exception_copy, Address: 0x1806cf258
+    Function Name: __current_exception_context, Address: 0x1806cf260
+  From DLL: api-ms-win-crt-stdio-l1-1-0.dll
+    Function Name: fread, Address: 0x1806cf3b0
+    Function Name: fclose, Address: 0x1806cf3b8
+    Function Name: fwrite, Address: 0x1806cf3c0
+    Function Name: fopen, Address: 0x1806cf3c8
+    Function Name: __stdio_common_vsprintf, Address: 0x1806cf3d0
+  From DLL: api-ms-win-crt-runtime-l1-1-0.dll
+    Function Name: _wassert, Address: 0x1806cf338
+    Function Name: _invalid_parameter_noinfo_noreturn, Address: 0x1806cf340
+    Function Name: _beginthreadex, Address: 0x1806cf348
+    Function Name: terminate, Address: 0x1806cf350
+    Function Name: _initterm_e, Address: 0x1806cf358
+    Function Name: _initterm, Address: 0x1806cf360
+    Function Name: _cexit, Address: 0x1806cf368
+    Function Name: _crt_atexit, Address: 0x1806cf370
+    Function Name: _execute_onexit_table, Address: 0x1806cf378
+    Function Name: _register_onexit_function, Address: 0x1806cf380
+    Function Name: _initialize_onexit_table, Address: 0x1806cf388
+    Function Name: _initialize_narrow_environment, Address: 0x1806cf390
+    Function Name: _configure_narrow_argv, Address: 0x1806cf398
+    Function Name: _seh_filter_dll, Address: 0x1806cf3a0
+  From DLL: api-ms-win-crt-convert-l1-1-0.dll
+    Function Name: atoi, Address: 0x1806cf2a8
+    Function Name: wcstombs, Address: 0x1806cf2b0
+  From DLL: api-ms-win-crt-math-l1-1-0.dll
+    Function Name: exp, Address: 0x1806cf2e0
+    Function Name: floor, Address: 0x1806cf2e8
+    Function Name: cos, Address: 0x1806cf2f0
+    Function Name: _isnan, Address: 0x1806cf2f8
+    Function Name: floorf, Address: 0x1806cf300
+    Function Name: log, Address: 0x1806cf308
+    Function Name: log10, Address: 0x1806cf310
+    Function Name: _finite, Address: 0x1806cf318
+    Function Name: ceil, Address: 0x1806cf320
+    Function Name: pow, Address: 0x1806cf328
+  From DLL: api-ms-win-crt-time-l1-1-0.dll
+    Function Name: _ftime64_s, Address: 0x1806cf3f0
+  From DLL: api-ms-win-crt-string-l1-1-0.dll
+    Function Name: wcsncpy, Address: 0x1806cf3e0
+  From DLL: api-ms-win-crt-utility-l1-1-0.dll
+    Function Name: qsort, Address: 0x1806cf400
+  From DLL: api-ms-win-crt-heap-l1-1-0.dll
+    Function Name: _callnewh, Address: 0x1806cf2c0
+    Function Name: free, Address: 0x1806cf2c8
+    Function Name: malloc, Address: 0x1806cf2d0
+

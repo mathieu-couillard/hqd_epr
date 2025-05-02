@@ -1,0 +1,28 @@
+import numpy as np
+
+def linear_to_db_power(data: np.ndarray) -> np.ndarray:
+    """
+    Convert normalized linear power data to dB power scale.
+
+    Args:
+      data (numpy.ndarray): numpy array of power to be converted from
+      normalized linear to dB scale.
+
+    Returns:
+      Data of power in logarithmic scale
+    """
+    return 10*np.log10(data)
+
+
+def db_to_lin_power(data: np.ndarray) -> np.ndarray:
+    """Convert dB power data to normalized linear power scale.
+
+    Args:
+        Data (numpy.ndarray): numpy array of power to be converted from
+        dB to normalized linear scale.
+
+    Returns:
+        numpy.ndarray: Data of power in normalized linear scale.
+
+    """
+    return 10**(data/10)
