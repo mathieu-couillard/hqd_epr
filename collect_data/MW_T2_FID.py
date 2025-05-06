@@ -34,10 +34,7 @@ ARRAY_SIZE = READOUT_LENGTH // (CHUNCK_SIZE * 4)
 with program() as Pulse_Duration_calib:
     qm_us = int(1e3 // 4)
     qm_ms = int(1e6 // 4)
-    # qm_10us = int(1e4//4)
 
-    # qm_n_tau = declare(int)
-    # qm_tau = declare(int)
     qm_iteration = declare(int)
 
     qm_j = declare(int)
