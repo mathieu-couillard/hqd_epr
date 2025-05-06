@@ -6,21 +6,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pyvisa as visa
-from drivers import KeysightE5071C, AMI430Vector, KeysightN9010A
 from qm import LoopbackInterface, SimulationConfig
 from qm.qua import *
 from qm.QuantumMachinesManager import QuantumMachinesManager
-
 from qualang_tools.loops import from_array
 from qualang_tools.results import fetching_tool, progress_counter
 from qualang_tools.units import unit
 
-from config import qm_config, READOUT_LENGTH
+from config import READOUT_LENGTH
 from config import InstrumentAddresses as InstAddr
+from config import qm_config
+from config.experiment_config import EXPERIMENT_BASE_PATH
 from config.experiment_config import FreeInductionDecay as conf
-from config.experiment_config import MagConfig, EXPERIMENT_BASE_PATH, n_avg
+from config.experiment_config import MagConfig
 from config.experiment_config import __file__ as EXPPERIMENT_CONFIG_PATH
-
+from config.experiment_config import n_avg
+from drivers import AMI430Vector, KeysightE5071C, KeysightN9010A
 from utils import generate_path
 
 # TODO: this should be in experiment config
@@ -29,7 +30,6 @@ EXPERIMENT_NAME = "fid_4K_dpph"
 
 CHUNCK_SIZE = 4 // 4
 ARRAY_SIZE = READOUT_LENGTH // (CHUNCK_SIZE * 4)
-
 
 with program() as Pulse_Duration_calib:
     qm_us = int(1e3 // 4)
@@ -97,11 +97,15 @@ with program() as Pulse_Duration_calib:
 
 # TODO: This should be in the utils
 def create_directories(project, exp_name):
-    path = generate_path(project=project, exp_name=exp_name, basepath=EXPERIMENT_BASE_PATH)
+    path = generate_path(
+        project=project, exp_name=exp_name, basepath=EXPERIMENT_BASE_PATH
+    )
     config_path = qm_config.__file__
     shutil.copy(__file__, f"{str(path / Path(__file__).name)}")
     shutil.copy(config_path, f"{str(path / Path(config_path).name)}")
-    shutil.copy(EXPPERIMENT_CONFIG_PATH, f"{str(path / Path(EXPPERIMENT_CONFIG_PATH).name)}")
+    shutil.copy(
+        EXPPERIMENT_CONFIG_PATH, f"{str(path / Path(EXPPERIMENT_CONFIG_PATH).name)}"
+    )
     return path
 
 
@@ -142,7 +146,7 @@ else:
 
     qm = qmm.open_qm(qm_config.config)
     path = create_directories(PROJECT_NAME, EXPERIMENT_NAME)
-    
+
     time.sleep(10)
     u = unit()
     job = qm.execute(Pulse_Duration_calib)
