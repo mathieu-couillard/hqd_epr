@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pyvisa as visa
-from drivers import KeysightE5071C, AMI430Vector, KeysightN9010A
+from drivers import KeysightPSG, AMI430Vector, KeysightN9010A
 from qm import LoopbackInterface, SimulationConfig
 from qm.qua import *
 from qm.QuantumMachinesManager import QuantumMachinesManager
@@ -18,8 +18,7 @@ from qualang_tools.units import unit
 from config import qm_config, READOUT_LENGTH
 from config import InstrumentAddresses as InstAddr
 from config.experiment_config import FreeInductionDecay as conf
-from config.experiment_config import MagConfig, EXPERIMENT_BASE_PATH, n_avg
-from config.experiment_config import __file__ as EXPPERIMENT_CONFIG_PATH
+from config.experiment_config import MagConfig
 
 from utils import generate_path
 
@@ -53,23 +52,23 @@ with program() as Pulse_Duration_calib:
     qm_adc_st = declare_stream(adc_trace=True)
     itr_st = declare_stream()
     with for_(qm_iteration, 0, qm_iteration < n_avg, qm_iteration + 1):
-        align("spin", "digitizer", "CryoSw")
-        reset_frame("spin", "digitizer")
-        reset_phase("digitizer")
+        align("spin", "Digitizer", "CryoSw")
+        reset_frame("spin", "Digitizer")
+        reset_phase("Digitizer")
         reset_phase("spin")
 
         # half-pi
-        align("spin", "digitizer", "CryoSw")
+        align("spin", "Digitizer", "CryoSw")
         play("spa", "SPA")
         play("pi_half", "spin")
 
-        align("spin", "digitizer", "CryoSw")
+        align("spin", "Digitizer", "CryoSw")
         # wait( 'CryoSw', 'Digitizer', 'spin')
         # measurement
         play("cryosw", "CryoSw")
         measure(
             "readout",
-            "digitizer",
+            "Digitizer",
             qm_adc_st,
             demod.sliced("cos", qm_I1, CHUNCK_SIZE, "out1"),
             demod.sliced("sin", qm_Q1, CHUNCK_SIZE, "out1"),
@@ -79,7 +78,7 @@ with program() as Pulse_Duration_calib:
 
         # cooldown
 
-        align("digitizer", "CryoSw", "spin")
+        align("Digitizer", "CryoSw", "spin")
         wait(qm_ms * 20)
 
         with for_(qm_j, 0, qm_j < ARRAY_SIZE, qm_j + 1):
@@ -97,16 +96,17 @@ with program() as Pulse_Duration_calib:
 
 # TODO: This should be in the utils
 def create_directories(project, exp_name):
-    path = generate_path(project=project, exp_name=exp_name, basepath=EXPERIMENT_BASE_PATH)
+    path = generate_path(project=project, exp_name=exp_name)
     config_path = qm_config.__file__
+    exp_config_path = experiment_config.__file__
     shutil.copy(__file__, f"{str(path / Path(__file__).name)}")
     shutil.copy(config_path, f"{str(path / Path(config_path).name)}")
-    shutil.copy(EXPPERIMENT_CONFIG_PATH, f"{str(path / Path(EXPPERIMENT_CONFIG_PATH).name)}")
+    shutil.copy(exp_config_path, f"{str(path / Path(exp_config_path).name)}")
     return path
 
 
 rm = visa.ResourceManager()
-qmm = QuantumMachinesManager(host=InstAddr.qm)
+qmm = QuantumMachinesManager(host=host_ip)
 
 
 simulate = False
@@ -131,7 +131,7 @@ else:
         ramp_rate=MagConfig.ramp_rate,
     )
     # Set up microwave
-    mw_source = KeysightE5071C(InstAddr.mw_source)
+    mw_source = KeysightPSG(InstAddr.mw_source)
     mw_source.freqInGHz = conf.mw_freq / 1e9
     mw_source.power_dBm = conf.mw_power
 
@@ -155,7 +155,7 @@ else:
         )
         print(I.shape, Q.shape)
 
-    t = np.linspace(0, READOUT_LENGTH - CHUNCK_SIZE * 4, ARRAY_SIZE)
+    t = np.linspace(0, readout_length - CHUNCK_SIZE * 4, ARRAY_SIZE)
     save_data_1d_echo(
         t,
         u.demod2volts(data=I, duration=CHUNCK_SIZE),

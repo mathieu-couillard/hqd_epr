@@ -9,7 +9,7 @@ import numpy as np
 import pyvisa as visa
 
 
-class KeysightPSG:
+class KeysightE8247C:
     def __init__(self, address):
         self._inst = visa.ResourceManager("@py").open_resource(address)
 

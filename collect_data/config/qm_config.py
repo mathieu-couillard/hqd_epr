@@ -2,6 +2,7 @@ import numpy as np
 from .inst_addresses import InstrumentAddresses
 from scipy.signal.windows import gaussian
 from pathlib import Path
+from experiment_config import QMConfig
 
 HOST_IP = InstrumentAddresses.qm
 
@@ -44,6 +45,7 @@ RT_SWITCH_BUFFER = 10
 
 
 # experiment variable
+#These should all be read from the experiment_config file
 SPIN_IF = 100e6
 SPIN_LO = 4.4798248e9
 
@@ -67,8 +69,7 @@ PI_HALF_PULSE_LENGTH = PI_PULSE_LENGTH  # units of 1ns, divisible by 4
 TIME_OF_FLIGHT = 180  # Units of ns, divisible by 4
 SMEARING = 0  # 50 # Units of ns, divisible by 4
 # {'out1': 0.21271891043526786, 'out2': 0.2172443777901786}
-# number of Average
-n_avg = 2
+
 
 # Input power at the room temperature from QM
 power = 0  # -5
@@ -175,7 +176,7 @@ config = {
                 "readout_odmr": "readout_odmr_pulse",
             },
         },
-        "readout": {
+        "digitizer": {
             "mixInputs": {
                 "I": ("con1", 1),
                 "Q": ("con1", 2),

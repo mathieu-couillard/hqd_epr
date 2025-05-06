@@ -19,13 +19,13 @@ GHz = u.GHz
 #############
 EXPERIMENT_BASE_PATH = Path('/mathieu/data')
 PROJECT_NAME = Path('impedance_matching_dpph')
+# Number of averaged runs
+n_avg = 2
 
 #############
 # PARAMETERS #
 ##############
 class QMConfig:
-    # Number of averaged runs
-    n_avg = 20
     padding = 1 * us
     ####################
     # Pulse parameters #

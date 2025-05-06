@@ -2,10 +2,9 @@
 from datetime import datetime
 from pathlib import Path
 
-from experiment_config import EXPERIMENT_BASE_PATH
 
 
-def generate_path(project, exp_name, basepath=EXPERIMENT_BASE_PATH, new=True):
+def generate_path(project, exp_name, basepath, new=True):
     """Create sub-directories for saving experimental data.
 
     Args:

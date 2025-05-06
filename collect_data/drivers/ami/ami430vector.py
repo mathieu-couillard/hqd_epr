@@ -6,7 +6,7 @@ from .ami430 import AMI430
 
 
 class AMI430Vector:
-    def __init__(self, addrs: tuple(str)):
+    def __init__(self, addrs: tuple[str]):
         """
         Connect to AMI430 all 3-axis magnet.
         xadr, yadr, zadr: IP address of the magnet.

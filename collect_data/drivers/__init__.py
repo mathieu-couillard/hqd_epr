@@ -1,6 +1,6 @@
 from .ami.ami430 import AMI430
 from .ami.ami430vector import AMI430Vector
-from .keysight.keysight_psg import KeysightPSG
+from .keysight.keysight_psg import KeysightE8247C
 from .keysight.keysight_spa import KeysightN9010A
 from .keysight.keysight_vna import KeysightE5071C
 from .signalhound.signalhound import SignalHoundSA
