@@ -1,5 +1,5 @@
-import numpy as np
 from pathlib import Path
+
 from qualang_tools.units import unit
 
 u = unit()
@@ -17,10 +17,11 @@ GHz = u.GHz
 #############
 # Data path #
 #############
-EXPERIMENT_BASE_PATH = Path('/mathieu/data')
-PROJECT_NAME = Path('impedance_matching_dpph')
+EXPERIMENT_BASE_PATH = Path("/mathieu/data")
+PROJECT_NAME = Path("impedance_matching_dpph")
 # Number of averaged runs
 n_avg = 2
+
 
 #############
 # PARAMETERS #
@@ -31,22 +32,28 @@ class QMConfig:
     # Pulse parameters #
     ####################
     # NV
-    const_amp = 0.2  # in V
-    const_len = 100 * ns  # in ns
+    spin_if = 100e6
+    spin_lo = 4.4798248e9
 
-    saturation_amp = 0.2  # in V. 0.2 starts to saturate the SRS 445A amplifier.
-    saturation_len = 0.5 * ms  # Needs to be several T1
+    spa_tigger_length = int(4e3)
 
-    pi_half_len = 64 * ns  # in units of ns #3.8MHz Rabi oscillations
-    pi_half_amp = const_amp
+    square_pulse_length = 400  # units of ns, divisible by 4
+    gaussian_pulse_length = 400  # units of ns, divisible by 4
+    init_pulse_length = 400  # units of ns, divisible by 4
 
-    pi_len = 2 * pi_half_len  # in units of ns
-    pi_amp = const_amp  # in units of volts
+    readout_length = 8000  # units of 1ns, divisible by 4
+    saturation_pulse_length = 2000  # units of 1ns, divisible by 4
+    pi_pulse_length = 500  # units of 1ns, divisible by 4
+    pi_half_pulse_length = pi_pulse_length  # units of 1ns, divisible by 4
 
-    readout_len = 5 * us
-
-    time_of_flight = 236 * ns  # Minimum 24, Swabian laser has 270ns delay
+    time_of_flight = 180 * ns  # Minimum 24, Swabian laser has 270ns delay
+    smearing = 0
     # safe_delay = u.to_clock_cycles(2 * us)  # Delay to safely avoid pulses during readout window
+
+    power = 0
+    saturation_power = power  # max 3dBm
+    pi_power = power  # max 3dBm
+    gaussian_power = power  # max 3dBm
 
     # Laser
     initialization_len = 100 * us
@@ -55,14 +62,14 @@ class QMConfig:
 
 class MagConfig:
     field = 165  # mT
-    ramp_rate = 0.5 # T/s
+    ramp_rate = 0.5  # T/s
     theta = 0  # degrees
     phi = 0  # degrees
 
 
 class MWConfig:
     mw_power = 10
-    mw_freq = 4500 * MHz # For single frequency experiments # 1544
+    mw_freq = 4500 * MHz  # For single frequency experiments # 1544
     step = 0.1 * MHz
     freq_if = 100 * MHz
     if_offset = 35 * MHz

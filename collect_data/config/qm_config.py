@@ -1,8 +1,11 @@
-import numpy as np
-from .inst_addresses import InstrumentAddresses
-from scipy.signal.windows import gaussian
 from pathlib import Path
+
+import numpy as np
+from scipy.signal.windows import gaussian
+
 from experiment_config import QMConfig
+
+from .inst_addresses import InstrumentAddresses
 
 HOST_IP = InstrumentAddresses.qm
 
@@ -43,40 +46,34 @@ CRYO_SWITCH_BUFFER = 5
 RT_SWITCH_DELAY = 160  # EVAL-ADRF5019
 RT_SWITCH_BUFFER = 10
 
+############################
+# Experiment configuration #
+############################
 
-# experiment variable
-#These should all be read from the experiment_config file
-SPIN_IF = 100e6
-SPIN_LO = 4.4798248e9
-
-
-SPA_TIGGER_LENGTH = int(4e3)
-
-SQUARE_PULSE_LENGTH = 400  # units of ns, divisible by 4
-GAUSSIAN_PULSE_LENGTH = 400  # units of ns, divisible by 4
-INIT_PULSE_LENGTH = 400  # units of ns, divisible by 4
-
-READOUT_LENGTH = 8000  # units of 1ns, divisible by 4
-SATURATION_PULSE_LENGTH = 2000  # units of 1ns, divisible by 4
-PI_PULSE_LENGTH = 500  # units of 1ns, divisible by 4
-PI_HALF_PULSE_LENGTH = PI_PULSE_LENGTH  # units of 1ns, divisible by 4
+SPIN_IF = QMConfig.spin_if
+SPIN_LO = QMConfig.spin_lo
 
 
-##########
-# Output variables
-##########
-# in the case of having a readout pulse time of flight should end before digitized readout starts
-TIME_OF_FLIGHT = 180  # Units of ns, divisible by 4
-SMEARING = 0  # 50 # Units of ns, divisible by 4
+SPA_TIGGER_LENGTH = QMConfig.spa_tigger_length
+
+SQUARE_PULSE_LENGTH = QMConfig.square_pulse_length
+GAUSSIAN_PULSE_LENGTH = QMConfig.gaussian_pulse_length
+INIT_PULSE_LENGTH = QMConfig.init_pulse_length
+
+READOUT_LENGTH = QMConfig.readout_length
+SATURATION_PULSE_LENGTH = QMConfig.saturation_pulse_length
+PI_PULSE_LENGTH = QMConfig.pi_pulse_length
+PI_HALF_PULSE_LENGTH = QMConfig.pi_half_pulse_length
+
+
+TIME_OF_FLIGHT = QMConfig.time_of_flight
+SMEARING = QMConfig.smearing
 # {'out1': 0.21271891043526786, 'out2': 0.2172443777901786}
 
 
-# Input power at the room temperature from QM
-power = 0  # -5
-
-saturation_power = power  # max 3dBm
-pi_power = power  # max 3dBm
-gaussian_power = power  # max 3dBm
+saturation_power = QMConfig.saturation_power  # max 3dBm
+pi_power = QMConfig.pi_power  # max 3dBm
+gaussian_power = QMConfig.gaussian_power  # max 3dBm
 
 # calculate the peak voltage
 saturation_wf_amp = (
