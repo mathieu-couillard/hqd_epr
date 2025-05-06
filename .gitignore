@@ -2,4 +2,4 @@
 *.~undo-tree~
 *.mypy_cache
 *.ropeproject
-*/\#*
+*\#*
