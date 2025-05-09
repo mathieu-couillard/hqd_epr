@@ -20,10 +20,10 @@ class KeysightN9010A():
         """ """
         self.config['params'] = {
             'attenuation':self.attenuation_dB,
-            'centerInGHz':self.centerFreqInGHz,
-            'spanInGHz':self.spanInGHz,
-            'startInGHz':self.startFreqInGHz,
-            'stopInGHz':self.stopFreqInGHz,
+            'centerInHz':self.centerFreqInHz,
+            'spanInHz':self.spanInHz,
+            'startInHz':self.startFreqInHz,
+            'stopInHz':self.stopFreqInHz,
             'vidBWInHz':self.videoBWInHz,
             'ResBWInHz':self.resBWInHz,
             'numOfPoints':self.numOfPoints,
@@ -62,39 +62,39 @@ class KeysightN9010A():
         self._write("DISP:WIND:TRAC1:Y:RLEV %f dBm" %level)
 
     @property
-    def centerFreqInGHz(self):
-        return float(self._query("FREQ:CENT?"))/1e9
+    def centerFreqInHz(self):
+        return float(self._query("FREQ:CENT?"))
 
-    @centerFreqInGHz.setter
-    def centerFreqInGHz(self,freq):
-        self._write("FREQ:CENT %f GHZ" %freq)
-
-    @property
-    def spanInGHz(self):
-        return float(self._query("FREQ:SPAN?"))/1e9
-
-    @spanInGHz.setter
-    def spanInGHz(self,span):
-        self._write("FREQ:SPAN %f GHZ" %span)
+    @centerFreqInHz.setter
+    def centerFreqInHz(self,freq):
+        self._write(f"FREQ:CENT {freq} Hz")
 
     @property
-    def startFreqInGHz(self):
-        """Gets the start frequency in GHz."""
-        return float(self._query("FREQ:STAR?"))/1e9
+    def spanInHz(self):
+        return float(self._query("FREQ:SPAN?"))
+
+    @spanInHz.setter
+    def spanInHz(self,span):
+        self._write(f"FREQ:SPAN {span} HZ")
+
+    @property
+    def startFreqInHz(self):
+        """Gets the start frequency in Hz."""
+        return float(self._query("FREQ:STAR?"))
     
-    @startFreqInGHz.setter
-    def startFreqInGHz(self,starf):
-        """Sets the start frequency in GHz."""
-        self._write("FREQ:STAR %f GHz" %starf)
+    @startFreqInHz.setter
+    def startFreqInHz(self,starf):
+        """Sets the start frequency in Hz."""
+        self._write(f"FREQ:STAR {starf} Hz")
 
     @property
-    def stopFreqInGHz(self): 
-        """Gets the stop frequency in GHz."""
-        return float(self._query("FREQ:STOP?"))/1e9
+    def stopFreqInHz(self): 
+        """Gets the stop frequency in Hz."""
+        return float(self._query("FREQ:STOP?"))
 
-    @stopFreqInGHz.setter
-    def stopFreqInGHz(self,stopf): 
-        self._write("FREQ:STOP %f GHZ" %stopf)
+    @stopFreqInHz.setter
+    def stopFreqInHz(self,stopf): 
+        self._write(f"FREQ:STOP {stopf} HZ")
 
     @property
     def resBWInHz(self):

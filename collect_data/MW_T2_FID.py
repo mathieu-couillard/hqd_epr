@@ -1,4 +1,4 @@
-import shutil  # replace this with pathlib
+import shutil
 import time
 from pathlib import Path
 
@@ -6,30 +6,31 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pyvisa as visa
+from drivers import KeysightE8247C, AMI430Vector, KeysightN9010A
 from qm import LoopbackInterface, SimulationConfig
 from qm.qua import *
 from qm.QuantumMachinesManager import QuantumMachinesManager
+
 from qualang_tools.loops import from_array
 from qualang_tools.results import fetching_tool, progress_counter
 from qualang_tools.units import unit
 
-from config import READOUT_LENGTH
-from config import InstrumentAddresses as InstAddr
 from config import qm_config
-from config.experiment_config import EXPERIMENT_BASE_PATH
-from config.experiment_config import FreeInductionDecay as conf
-from config.experiment_config import MagConfig
+from config import InstrumentAddresses as InstAddr
+from config.experiment_config import FreeInductionDecay as FIDconf
+from config.experiment_config import MagConfig, EXPERIMENT_BASE_PATH, n_avg
 from config.experiment_config import __file__ as EXPPERIMENT_CONFIG_PATH
-from config.experiment_config import n_avg
-from drivers import AMI430Vector, KeysightE5071C, KeysightN9010A
+
 from utils import generate_path
+from utils import save_data_1d_echo
 
 # TODO: this should be in experiment config
 PROJECT_NAME = "impedance_matching_dpph"
 EXPERIMENT_NAME = "fid_4K_dpph"
 
 CHUNCK_SIZE = 4 // 4
-ARRAY_SIZE = READOUT_LENGTH // (CHUNCK_SIZE * 4)
+ARRAY_SIZE = qm_config.READOUT_LENGTH // (CHUNCK_SIZE * 4)
+
 
 with program() as Pulse_Duration_calib:
     qm_us = int(1e3 // 4)
@@ -56,14 +57,13 @@ with program() as Pulse_Duration_calib:
         reset_phase("spin")
 
         # half-pi
-        align("spin", "digitizer", "CryoSw")
         play("spa", "SPA")
         play("pi_half", "spin")
 
+        #
         align("spin", "digitizer", "CryoSw")
-        # wait( 'CryoSw', 'Digitizer', 'spin')
-        # measurement
         play("cryosw", "CryoSw")
+        # measurement
         measure(
             "readout",
             "digitizer",
@@ -75,9 +75,7 @@ with program() as Pulse_Duration_calib:
         )
 
         # cooldown
-
-        align("digitizer", "CryoSw", "spin")
-        wait(qm_ms * 20)
+        wait(5*qm_ms)
 
         with for_(qm_j, 0, qm_j < ARRAY_SIZE, qm_j + 1):
             assign(qm_I[qm_j], qm_I1[qm_j] + qm_I2[qm_j])
@@ -94,15 +92,11 @@ with program() as Pulse_Duration_calib:
 
 # TODO: This should be in the utils
 def create_directories(project, exp_name):
-    path = generate_path(
-        project=project, exp_name=exp_name, basepath=EXPERIMENT_BASE_PATH
-    )
+    path = generate_path(project=project, exp_name=exp_name, basepath=EXPERIMENT_BASE_PATH)
     config_path = qm_config.__file__
     shutil.copy(__file__, f"{str(path / Path(__file__).name)}")
     shutil.copy(config_path, f"{str(path / Path(config_path).name)}")
-    shutil.copy(
-        EXPPERIMENT_CONFIG_PATH, f"{str(path / Path(EXPPERIMENT_CONFIG_PATH).name)}"
-    )
+    shutil.copy(EXPPERIMENT_CONFIG_PATH, f"{str(path / Path(EXPPERIMENT_CONFIG_PATH).name)}")
     return path
 
 
@@ -131,19 +125,23 @@ else:
         phi=MagConfig.phi,
         ramp_rate=MagConfig.ramp_rate,
     )
+
     # Set up microwave
-    mw_source = KeysightE5071C(InstAddr.mw_source)
-    mw_source.freqInGHz = conf.mw_freq / 1e9
-    mw_source.power_dBm = conf.mw_power
+    mw_source = KeysightE8247C(InstAddr.mw_source)
+    mw_source.freqInHz = FIDconf.spin_lo_freq
+    mw_source.power_dBm = FIDconf.spin_lo_power
+
 
     # Set up spectrum analyzer
     spa = KeysightN9010A(InstAddr.spa)
-    spa.centerFreqInGHz = conf.mw_freq
-    spa.spanInGHz = 0
+    spa.centerFreqInHz = qm_config.SPIN_LO + qm_config.SPIN_IF
+
+    spa.spanInHz = 5e6
+    spa.resBWInHz = 0.01e6
 
     qm = qmm.open_qm(qm_config.config)
     path = create_directories(PROJECT_NAME, EXPERIMENT_NAME)
-
+    
     time.sleep(10)
     u = unit()
     job = qm.execute(Pulse_Duration_calib)
@@ -154,9 +152,9 @@ else:
         progress_counter(
             int(iteration), int(n_avg), start_time=res_handles.get_start_time()
         )
-        print(I.shape, Q.shape)
+        #print(I.shape, Q.shape)
 
-    t = np.linspace(0, READOUT_LENGTH - CHUNCK_SIZE * 4, ARRAY_SIZE)
+    t = np.linspace(0, qm_config.READOUT_LENGTH-CHUNCK_SIZE * 4, ARRAY_SIZE)
     save_data_1d_echo(
         t,
         u.demod2volts(data=I, duration=CHUNCK_SIZE),

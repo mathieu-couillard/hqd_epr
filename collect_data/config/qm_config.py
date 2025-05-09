@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 from scipy.signal.windows import gaussian
 
-from experiment_config import QMConfig
+from .experiment_config import QMConfig, MWConfig
 
 from .inst_addresses import InstrumentAddresses
 
@@ -34,27 +34,32 @@ def IQ_imbalance(g, phi):
 # Mixer correction
 MIXER_GAIN = -0.06202944228053098
 MIXER_PHASE = 0.02538897782564157
-DC_OFFSET_I = -0.021664633363113018
-DC_OFFSET_Q = -0.020055943976947946
+OUTPUT_OFFSET_I = -0.021664633363113018
+OUTPUT_OFFSET_Q = -0.020055943976947946
+
+INPUT_OFFOUT_I = 0 #-0.21271891043526786
+INPUT_OFFOUT_Q = 0 #-0.2172443777901786
 
 # details for switch delays
 ANALOG_OUTPUT_DELAY = 200  # QM has 136 ns delay in the analogs line with digital
 
-CRYO_SWITCH_DELAY = 10  # EV1HMC547ALP3
-CRYO_SWITCH_BUFFER = 5
+CRYO_SWITCH_BUFFER = 0
+CRYO_SWITCH_DELAY = 144+240  # EV1HMC547ALP3
+CRYO_SWITCH_TIME_OF_FLIGHT = 100
 
-RT_SWITCH_DELAY = 160  # EVAL-ADRF5019
-RT_SWITCH_BUFFER = 10
+
+RT_SWITCH_BUFFER = 0
+RT_SWITCH_DELAY = 252+RT_SWITCH_BUFFER  # EVAL-ADRF5019
 
 ############################
 # Experiment configuration #
 ############################
 
-SPIN_IF = QMConfig.spin_if
-SPIN_LO = QMConfig.spin_lo
+SPIN_IF = QMConfig.spin_if_freq
+SPIN_LO = MWConfig.spin_lo_freq
 
 
-SPA_TIGGER_LENGTH = QMConfig.spa_tigger_length
+SPA_TIGGER_LENGTH = int(4e3)
 
 SQUARE_PULSE_LENGTH = QMConfig.square_pulse_length
 GAUSSIAN_PULSE_LENGTH = QMConfig.gaussian_pulse_length
@@ -66,25 +71,23 @@ PI_PULSE_LENGTH = QMConfig.pi_pulse_length
 PI_HALF_PULSE_LENGTH = QMConfig.pi_half_pulse_length
 
 
-TIME_OF_FLIGHT = QMConfig.time_of_flight
-SMEARING = QMConfig.smearing
+TIME_OF_FLIGHT = 584 # pulse
+# TIME_OF_FLIGHT = 24#524 # echo
+SMEARING = 0
 # {'out1': 0.21271891043526786, 'out2': 0.2172443777901786}
 
 
-saturation_power = QMConfig.saturation_power  # max 3dBm
-pi_power = QMConfig.pi_power  # max 3dBm
-gaussian_power = QMConfig.gaussian_power  # max 3dBm
+SATURATION_POWER = QMConfig.spin_if_power  # max 3dBm
+PI_POWER = QMConfig.spin_if_power  # max 3dBm
+GAUSSIAN_POWER = QMConfig.spin_if_power  # max 3dBm
 
 # calculate the peak voltage
 saturation_wf_amp = (
-    np.sqrt(2) * np.sqrt((50 / 1000) * (10 ** (saturation_power / 10)))
+    np.sqrt(2) * np.sqrt((50 / 1000) * (10 ** (SATURATION_POWER / 10)))
 ) / 2.0
-pi_amp = np.sqrt(2) * np.sqrt((50 / 1000) * (10 ** (pi_power / 10)))
-gaussian_amp = np.sqrt(2) * np.sqrt((50 / 1000) * (10 ** (gaussian_power / 10)))
+pi_amp = np.sqrt(2) * np.sqrt((50 / 1000) * (10 ** (PI_POWER / 10)))
+gaussian_amp = np.sqrt(2) * np.sqrt((50 / 1000) * (10 ** (GAUSSIAN_POWER / 10)))
 pi_half_amp = pi_amp / 2.0
-print(saturation_wf_amp)
-print(pi_amp)
-print(pi_half_amp)
 
 #################
 # Gaussian waveforms
@@ -108,11 +111,11 @@ config = {
             "type": "opx1",  # why was this removed???
             "analog_outputs": {
                 1: {
-                    "offset": DC_OFFSET_I,
+                    "offset": OUTPUT_OFFSET_I,
                     "delay": ANALOG_OUTPUT_DELAY,
                 },
                 2: {
-                    "offset": DC_OFFSET_Q,
+                    "offset": OUTPUT_OFFSET_Q,
                     "delay": ANALOG_OUTPUT_DELAY,
                 },
             },
@@ -125,11 +128,11 @@ config = {
             },
             "analog_inputs": {
                 1: {
-                    "offset": 0,
+                    "offset": INPUT_OFFOUT_I,
                     "gain_db": 0,
                 },  # signal from the down converted signal
                 2: {
-                    "offset": 0,
+                    "offset": INPUT_OFFOUT_Q,
                     "gain_db": 0,
                 },  # , 'gain_db': 0 signal from the up converted signal
             },
@@ -305,7 +308,7 @@ config = {
         },
         "cryosw_on": {
             "operation": "control",
-            "length": READOUT_LENGTH + 500,
+            "length": READOUT_LENGTH + CRYO_SWITCH_TIME_OF_FLIGHT,
             "digital_marker": "ON",
         },
         "spa_on": {
@@ -317,7 +320,7 @@ config = {
     "waveforms": {
         "const_wf": {"type": "constant", "sample": saturation_wf_amp},
         "gaussian_wf": {"type": "arbitrary", "samples": gaussian_I_wf},
-        "pi_wf": {"type": "arbitrary", "samples": pi_I_wf},
+        "pi_wf": {"type": "constant", "sample": saturation_wf_amp},
         "pi_half_wf": {"type": "arbitrary", "samples": pi_half_I_wf},
         "minus_pi_half_wf": {"type": "arbitrary", "samples": minus_pi_half_I_wf},
         "zero_wf": {"type": "constant", "sample": 0},

@@ -62,26 +62,26 @@ class KeysightE8247C:
     # Methods that send commands
     ##############################
     def _write(self, cmd):
-        self._instr.write(cmd)
+        self._inst.write(cmd)
 
     def _read(self):
-        val = self._instr.read()
+        val = self._inst.read()
         return val
 
     def _query(self, cmd):
-        val = self._instr.query(cmd)
+        val = self._inst.query(cmd)
         return val[:-1]
 
     ##############################
     # Attributes
     ##############################
     @property
-    def freqInGHz(self):
-        return float(self._query("FREQ:FIXED?")) / 1e9
+    def freqInHz(self):
+        return float(self._query("FREQ:FIXED?"))
 
-    @freqInGHz.setter
-    def freqInGHz(self, freq):
-        self._write("FREQ:FIXED %f" % (freq * 1e9))
+    @freqInHz.setter
+    def freqInHz(self, freq):
+        self._write(f"FREQ:FIXED {freq}")
 
     @property
     def power_dBm(self):
@@ -89,8 +89,7 @@ class KeysightE8247C:
 
     @power_dBm.setter
     def power_dBm(self, power):
-        _power = str(power)
-        self._write("POW %s" % (_power))
+        self._write(f"POW {power}")
 
     @property
     def phaseInDeg(self):

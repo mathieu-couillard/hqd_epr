@@ -264,20 +264,21 @@ def save_data_1d_echo(t, I_1d, Q_1d, save_folder, xlabel, subfolder=""):
     os.makedirs(raw_data_1d_fig_path, exist_ok=True)
     plt.savefig(os.path.join(raw_data_1d_fig_path, "1d_{}".format(xlabel) + ".png"))
     plt.close()
-    yes = True
-    if yes:
-        fig, ax = plt.subplots(facecolor="w")
-        ax.plot(t, amp_1d, label="Amp")
-        # ax.plot(t, Q_1d, label="Q")
+    
 
-        ax.set_xlabel("time [ns]")
-        ax.set_ylabel("Amp [V]")
-        raw_data_1d_fig_path = os.path.join(save_folder, "Fig_1D", subfolder)
-        os.makedirs(raw_data_1d_fig_path, exist_ok=True)
-        plt.savefig(
-            os.path.join(raw_data_1d_fig_path, "1d_{}".format(xlabel) + "amp" + ".png")
-        )
-        plt.close()
+    fig, ax = plt.subplots(facecolor="w")
+    ax.plot(t, amp_1d, label="Amp")
+    # ax.plot(t, Q_1d, label="Q")
+
+    ax.set_xlabel("time [ns]")
+    ax.set_ylabel("Amp [V]")
+    raw_data_1d_fig_path = os.path.join(save_folder, "Fig_1D", subfolder)
+    os.makedirs(raw_data_1d_fig_path, exist_ok=True)
+    plt.savefig(
+        os.path.join(raw_data_1d_fig_path, "1d_{}".format(xlabel) + "amp" + ".png")
+    )
+    plt.show()
+    plt.close()
 
 
 def draw_pcolorMesh_echo(
