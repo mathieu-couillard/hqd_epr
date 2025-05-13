@@ -25,13 +25,13 @@ from utils import save_data_1d_echo
 
 # TODO: this should be in experiment config
 PROJECT_NAME = "impedance_matching_dpph"
-EXPERIMENT_NAME = "fid_4K_dpph"
+EXPERIMENT_NAME = "rt_switch_calibration"
 
 CHUNCK_SIZE = 4 // 4
 ARRAY_SIZE = qm_config.READOUT_LENGTH // (CHUNCK_SIZE * 4)
 
 
-with program() as Pulse_Duration_calib:
+with program() as rt_switch_calibration:
     qm_us = int(1e3 // 4)
     qm_ms = int(1e6 // 4)
 
@@ -50,19 +50,21 @@ with program() as Pulse_Duration_calib:
     qm_adc_st = declare_stream(adc_trace=True)
     itr_st = declare_stream()
     with for_(qm_iteration, 0, qm_iteration < n_avg, qm_iteration + 1):
-        align("spin", "digitizer", "CryoSw")
-        reset_frame("spin", "digitizer")
-        reset_phase("digitizer")
-        reset_phase("spin")
+        align()
+        reset_phase('spin')
+        reset_phase('digitizer')
+        reset_frame('spin')
 
-        # half-pi
-        play("spa", "SPA")
-        play("pi_half", "spin")
 
-        #
-        align("spin", "digitizer", "CryoSw")
-        play("cryosw", "CryoSw")
-        # measurement
+        wait(100//4, "spin") # compensate for time of flight
+        play("x90", "spin")
+        wait(2000//4, "spin")
+        frame_rotation_2pi(0.5, "spin")
+        play("x180", "spin")
+        wait(1000//4, 'spin')
+        align("spin", "CryoSw", 'digitizer')
+
+        play('cryosw', "CryoSw")
         measure(
             "readout",
             "digitizer",
@@ -72,9 +74,6 @@ with program() as Pulse_Duration_calib:
             demod.sliced("cos", qm_Q2, CHUNCK_SIZE, "out2"),
             demod.sliced("sin", qm_I2, CHUNCK_SIZE, "out2"),
         )
-
-        # cooldown
-        wait(5*qm_ms)
 
         with for_(qm_j, 0, qm_j < ARRAY_SIZE, qm_j + 1):
             assign(qm_I[qm_j], qm_I1[qm_j] + qm_I2[qm_j])
@@ -107,7 +106,7 @@ simulate = False
 if simulate:
     simulation_time = 12000 // 4
     job = qmm.simulate(
-        config, Pulse_Duration_calib, SimulationConfig(duration=simulation_time)
+        config, rt_switch_calibration, SimulationConfig(duration=simulation_time)
     )
     results = job.get_simulated_samples()
     plt.figure()
@@ -127,9 +126,8 @@ else:
 
     # Set up microwave
     mw_source = KeysightE8247C(InstAddr.mw_source)
-    mw_source.freqInHz = FIDconf.spin_lo_freq
+    mw_source.freqInHz = FIDconf.spin_lo_freq #- qm_config.SPIN_IF    
     mw_source.power_dBm = FIDconf.spin_lo_power
-
 
     # Set up spectrum analyzer
     spa = KeysightN9010A(InstAddr.spa)
@@ -143,7 +141,7 @@ else:
     
     time.sleep(10)
     u = unit()
-    job = qm.execute(Pulse_Duration_calib)
+    job = qm.execute(rt_switch_calibration)
     res_handles = fetching_tool(job, data_list=["Iteration", "I", "Q"], mode="live")
 
     while res_handles.is_processing():

@@ -37,14 +37,14 @@ MIXER_PHASE = 0.02538897782564157
 OUTPUT_OFFSET_I = -0.021664633363113018
 OUTPUT_OFFSET_Q = -0.020055943976947946
 
-INPUT_OFFOUT_I = 0 #-0.21271891043526786
-INPUT_OFFOUT_Q = 0 #-0.2172443777901786
+INPUT_OFFOUT_I = -0.21271891043526786
+INPUT_OFFOUT_Q = -0.2172443777901786
 
 # details for switch delays
 ANALOG_OUTPUT_DELAY = 200  # QM has 136 ns delay in the analogs line with digital
 
 CRYO_SWITCH_BUFFER = 0
-CRYO_SWITCH_DELAY = 144+240  # EV1HMC547ALP3
+CRYO_SWITCH_DELAY = 700  # EV1HMC547ALP3
 CRYO_SWITCH_TIME_OF_FLIGHT = 100
 
 
@@ -201,7 +201,7 @@ config = {
             "digitalInputs": {
                 "marker": {
                     "port": ("con1", 2),
-                    "delay": CRYO_SWITCH_DELAY,  # WHY IS THIS NOT CRYO_SWITCH_DELAY?
+                    "delay": CRYO_SWITCH_DELAY,
                     "buffer": CRYO_SWITCH_BUFFER,
                 },
             },
@@ -320,9 +320,9 @@ config = {
     "waveforms": {
         "const_wf": {"type": "constant", "sample": saturation_wf_amp},
         "gaussian_wf": {"type": "arbitrary", "samples": gaussian_I_wf},
-        "pi_wf": {"type": "constant", "sample": saturation_wf_amp},
-        "pi_half_wf": {"type": "arbitrary", "samples": pi_half_I_wf},
-        "minus_pi_half_wf": {"type": "arbitrary", "samples": minus_pi_half_I_wf},
+        "pi_wf": {"type": "constant", "sample": pi_amp},
+        "pi_half_wf": {"type": "constant", "sample": pi_half_amp},
+        "minus_pi_half_wf": {"type": "constant", "sample": -pi_half_amp},
         "zero_wf": {"type": "constant", "sample": 0},
     },
     "digital_waveforms": {

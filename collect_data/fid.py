@@ -50,6 +50,7 @@ with program() as rt_switch_calibration:
     qm_adc_st = declare_stream(adc_trace=True)
     itr_st = declare_stream()
     with for_(qm_iteration, 0, qm_iteration < n_avg, qm_iteration + 1):
+        play('spa',"SPA")
         measure(
             "readout",
             "digitizer",
@@ -60,12 +61,15 @@ with program() as rt_switch_calibration:
             demod.sliced("sin", qm_I2, CHUNCK_SIZE, "out2"),
         )
 
+
+        wait(100//4, "spin")
         play("x90", "spin")
-
+        wait(400//4, "spin")
+        play("x180", "spin")
+        wait(200//4, "spin")
         align("spin", "CryoSw")
+
         play('cryosw', "CryoSw")
-
-
         with for_(qm_j, 0, qm_j < ARRAY_SIZE, qm_j + 1):
             assign(qm_I[qm_j], qm_I1[qm_j] + qm_I2[qm_j])
             assign(qm_Q[qm_j], qm_Q1[qm_j] - qm_Q2[qm_j])
@@ -105,7 +109,6 @@ if simulate:
     plt.show()
 
 else:
-
 
     # Set up microwave
     mw_source = KeysightE8247C(InstAddr.mw_source)

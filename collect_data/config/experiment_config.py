@@ -20,7 +20,7 @@ GHz = u.GHz
 EXPERIMENT_BASE_PATH = Path("/mathieu/data")
 PROJECT_NAME = Path("impedance_matching_dpph")
 # Number of averaged runs
-n_avg = 2
+n_avg = 200
 
 
 #############
@@ -39,29 +39,31 @@ class QMConfig:
     gaussian_pulse_length = 400  # units of ns, divisible by 4
     init_pulse_length = 400  # units of ns, divisible by 4
 
-    readout_length = 1500  # units of 1ns, divisible by 4
+    readout_length = 2000  # units of 1ns, divisible by 4
     saturation_pulse_length = 500  # units of 1ns, divisible by 4
-    pi_pulse_length = 500  # units of 1ns, divisible by 4
+    pi_pulse_length = 452  # units of 1ns, divisible by 4
     pi_half_pulse_length = pi_pulse_length  # units of 1ns, divisible by 4
 
 
-    safe_delay = u.to_clock_cycles(480)  # Delay to safely avoid pulses during readout window
+    safe_delay = u.to_clock_cycles(2000)  # Delay to safely avoid pulses during readout window
     # Laser
     initialization_len = 100 * us
     power_stabilization_len = 500 * us
 
 
 class MagConfig:
-    field = 164.404  # mT
+    field = 165.2418 # 164.401  # mT
     ramp_rate = 0.5  # T/s
     theta = 0  # degrees
     phi = 0  # degrees
 
 
 class MWConfig:
-    spin_freq = 4.581007 * GHz 
-    spin_lo_freq =   spin_freq - QMConfig.spin_if_freq
-    spin_lo_power = 0
+    spin_freq = 4.580512 * GHz
+    spin_freq = 4.580563 * GHz
+    spin_lo_freq = spin_freq - QMConfig.spin_if_freq
+    spin_lo_power = 10
+
 
 class FreeInductionDecay:
     spin_lo_power = MWConfig.spin_lo_power
