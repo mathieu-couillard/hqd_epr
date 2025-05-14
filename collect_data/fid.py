@@ -17,7 +17,7 @@ from qualang_tools.units import unit
 from config import qm_config
 from config import InstrumentAddresses as InstAddr
 from config.experiment_config import FreeInductionDecay as FIDconf
-from config.experiment_config import EXPERIMENT_BASE_PATH, n_avg
+from config.experiment_config import EXPERIMENT_BASE_PATH, n_avg, MWConfig
 from config.experiment_config import __file__ as EXPPERIMENT_CONFIG_PATH
 
 from utils import generate_path
@@ -62,11 +62,11 @@ with program() as rt_switch_calibration:
         )
 
 
-        wait(100//4, "spin")
-        play("x90", "spin")
-        wait(400//4, "spin")
-        play("x180", "spin")
-        wait(200//4, "spin")
+        # wait(500//4, "spin")
+        play("x90", "spin", duration=500//4)
+        wait(1500//4, "spin")
+        # play("x180", "spin")
+        # wait(200//4, "spin")
         align("spin", "CryoSw")
 
         play('cryosw', "CryoSw")
@@ -118,11 +118,11 @@ else:
 
 
     # Set up spectrum analyzer
-    spa = KeysightN9010A(InstAddr.spa)
-    spa.centerFreqInHz = qm_config.SPIN_LO # qm_config.SPIN_IF
+    # spa = KeysightN9010A(InstAddr.spa)
+    # spa.centerFreqInHz = MWConfig.spin_freq
 
-    spa.spanInHz = 5e6
-    spa.resBWInHz = 0.01e6
+    # spa.spanInHz = 5e6
+    # spa.resBWInHz = 0.01e6
 
     qm = qmm.open_qm(qm_config.config)
     path = create_directories(PROJECT_NAME, EXPERIMENT_NAME)

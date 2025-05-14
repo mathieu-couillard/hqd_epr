@@ -263,6 +263,7 @@ def save_data_1d_echo(t, I_1d, Q_1d, save_folder, xlabel, subfolder=""):
     raw_data_1d_fig_path = os.path.join(save_folder, "Fig_1D", subfolder)
     os.makedirs(raw_data_1d_fig_path, exist_ok=True)
     plt.savefig(os.path.join(raw_data_1d_fig_path, "1d_{}".format(xlabel) + ".png"))
+    # plt.show()
     plt.close()
     
 

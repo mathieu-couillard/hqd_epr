@@ -48,8 +48,8 @@ CRYO_SWITCH_DELAY = 0  # EV1HMC547ALP3
 CRYO_SWITCH_TIME_OF_FLIGHT = 100
 
 
-RT_SWITCH_BUFFER = 0
-RT_SWITCH_DELAY = 388+RT_SWITCH_BUFFER  # EVAL-ADRF5019
+RT_SWITCH_BUFFER = 10
+RT_SWITCH_DELAY = 388  # EVAL-ADRF5019
 
 ############################
 # Experiment configuration #
@@ -71,7 +71,7 @@ PI_PULSE_LENGTH = QMConfig.pi_pulse_length
 PI_HALF_PULSE_LENGTH = QMConfig.pi_half_pulse_length
 
 
-TIME_OF_FLIGHT = 584 # pulse
+TIME_OF_FLIGHT = 24#584 # pulse
 # TIME_OF_FLIGHT = 24#524 # echo
 SMEARING = 0
 # {'out1': 0.21271891043526786, 'out2': 0.2172443777901786}
@@ -86,11 +86,6 @@ pi_half_amp = pi_amp / 2.0
 #################
 # Gaussian waveforms
 #################
-pi_I_wf = pi_amp * gaussian(PI_PULSE_LENGTH, PI_PULSE_LENGTH / 5)
-pi_half_I_wf = pi_half_amp * gaussian(PI_HALF_PULSE_LENGTH, PI_HALF_PULSE_LENGTH / 5)
-minus_pi_half_I_wf = -pi_half_amp * gaussian(
-    PI_HALF_PULSE_LENGTH, PI_HALF_PULSE_LENGTH / 5
-)
 gaussian_I_wf = gaussian_amp * gaussian(
     GAUSSIAN_PULSE_LENGTH, GAUSSIAN_PULSE_LENGTH / 5
 )
@@ -138,7 +133,7 @@ config = {
                 "I": ("con1", 1),
                 "Q": ("con1", 2),
                 "lo_frequency": SPIN_LO,
-                "mixer": "mixer_spin",
+                "mixer": "mixer_spin1",
             },
             "intermediate_frequency": SPIN_IF,
             "operations": {
@@ -175,7 +170,7 @@ config = {
                 "I": ("con1", 1),
                 "Q": ("con1", 2),
                 "lo_frequency": SPIN_LO,
-                "mixer": "mixer_spin",
+                "mixer": "mixer_spin2",
             },
             "intermediate_frequency": SPIN_IF,
             "operations": {"readout": "readout_pulse"},
@@ -302,7 +297,7 @@ config = {
         },
         "cryosw_on": {
             "operation": "control",
-            "length": READOUT_LENGTH + CRYO_SWITCH_TIME_OF_FLIGHT,
+            "length": READOUT_LENGTH+500,
             "digital_marker": "ON",
         },
         "spa_on": {
@@ -340,7 +335,14 @@ config = {
         },
     },
     "mixers": {
-        "mixer_spin": [
+        "mixer_spin1": [
+            {
+                "intermediate_frequency": SPIN_IF,
+                "lo_frequency": SPIN_LO,
+                "correction": IQ_imbalance(MIXER_GAIN, MIXER_PHASE),
+            }
+        ],
+        "mixer_spin2": [
             {
                 "intermediate_frequency": SPIN_IF,
                 "lo_frequency": SPIN_LO,

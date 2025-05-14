@@ -55,28 +55,31 @@ with program() as rt_switch_calibration:
         reset_phase('digitizer')
         reset_frame('spin')
 
-        wait(1000000//4, 'SPA')
         play('spa',"SPA")
-        measure(
-            "readout",
-            "digitizer",
-            qm_adc_st,
-            
-            demod.sliced("cos", qm_I1, CHUNCK_SIZE, "out1"),
-            demod.sliced("sin", qm_Q1, CHUNCK_SIZE, "out1"),
-            demod.sliced("cos", qm_Q2, CHUNCK_SIZE, "out2"),
-            demod.sliced("sin", qm_I2, CHUNCK_SIZE, "out2"),
-        )
+
 
         wait(400//4, "spin") # compensate for time of flight
         play("x90", "spin")
         wait(2000//4, "spin")
         frame_rotation_2pi(0.5, "spin")
         play("x180", "spin")
-        wait(1500//4, 'spin')
+        wait(1400//4, 'spin')
+        
+        align("spin","digitizer", "CryoSw")
 
-        align("spin", "CryoSw")
+        wait(400//4, "digitizer")
+
         play('cryosw', "CryoSw")
+        measure(
+            "readout",
+            "digitizer",
+            qm_adc_st,
+            demod.sliced("cos", qm_I1, CHUNCK_SIZE, "out1"),
+            demod.sliced("sin", qm_Q1, CHUNCK_SIZE, "out1"),
+            demod.sliced("cos", qm_Q2, CHUNCK_SIZE, "out2"),
+            demod.sliced("sin", qm_I2, CHUNCK_SIZE, "out2"),
+        )
+
         wait(1_500_000//4)
         with for_(qm_j, 0, qm_j < ARRAY_SIZE, qm_j + 1):
             assign(qm_I[qm_j], qm_I1[qm_j] + qm_I2[qm_j])
@@ -133,11 +136,11 @@ else:
     mw_source.power_dBm = MWConfig.spin_lo_power
 
     # Set up spectrum analyzer
-    spa = KeysightN9010A(InstAddr.spa)
-    spa.centerFreqInHz = qm_config.SPIN_LO + qm_config.SPIN_IF  
+    # spa = KeysightN9010A(InstAddr.spa)
+    # spa.centerFreqInHz = MWConfig.spin_freq
 
-    spa.spanInHz = 125e6
-    spa.resBWInHz = 0.01e6
+    # spa.spanInHz = 125e6
+    # spa.resBWInHz = 0.01e6
 
     qm = qmm.open_qm(qm_config.config)
     path = create_directories(PROJECT_NAME, EXPERIMENT_NAME)
