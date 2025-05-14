@@ -20,7 +20,7 @@ GHz = u.GHz
 EXPERIMENT_BASE_PATH = Path("/mathieu/data")
 PROJECT_NAME = Path("impedance_matching_dpph")
 # Number of averaged runs
-n_avg = 1000
+n_avg = 1
 
 
 #############
@@ -33,7 +33,7 @@ class QMConfig:
     ####################
     # NV
     spin_if_freq = 100 * MHz
-    spin_if_amp = 0.5 # max 0.5V
+    spin_if_amp = 500e-3 # max 500 mV
 
     square_pulse_length = 400  # units of ns, divisible by 4
     gaussian_pulse_length = 400  # units of ns, divisible by 4
@@ -41,7 +41,7 @@ class QMConfig:
 
     readout_length = 10000  # units of 1ns, divisible by 4
     saturation_pulse_length = 500  # units of 1ns, divisible by 4
-    pi_pulse_length = 100  # units of 1ns, divisible by 4
+    pi_pulse_length = 500  # units of 1ns, divisible by 4
     pi_half_pulse_length = pi_pulse_length  # units of 1ns, divisible by 4
 
 
@@ -52,7 +52,7 @@ class QMConfig:
 
 
 class MagConfig:
-    field = 165.2418 # 164.401  # mT
+    field = 164.995 # 164.401  # mT
     ramp_rate = 0.5  # T/s
     theta = 0  # degrees
     phi = 0  # degrees
@@ -60,7 +60,7 @@ class MagConfig:
 
 class MWConfig:
     spin_freq = 4.580512 * GHz
-    spin_freq = 4.580563 * GHz
+    spin_freq = 4.581308 * GHz
     spin_lo_freq = spin_freq - QMConfig.spin_if_freq
     spin_lo_power = 10
 
