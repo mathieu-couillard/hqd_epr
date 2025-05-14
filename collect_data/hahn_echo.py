@@ -55,10 +55,13 @@ with program() as rt_switch_calibration:
         reset_phase('digitizer')
         reset_frame('spin')
 
+        wait(1000000//4, 'SPA')
+        play('spa',"SPA")
         measure(
             "readout",
             "digitizer",
             qm_adc_st,
+            
             demod.sliced("cos", qm_I1, CHUNCK_SIZE, "out1"),
             demod.sliced("sin", qm_Q1, CHUNCK_SIZE, "out1"),
             demod.sliced("cos", qm_Q2, CHUNCK_SIZE, "out2"),
@@ -71,8 +74,8 @@ with program() as rt_switch_calibration:
         frame_rotation_2pi(0.5, "spin")
         play("x180", "spin")
         wait(1500//4, 'spin')
-        align("spin", "CryoSw")
 
+        align("spin", "CryoSw")
         play('cryosw', "CryoSw")
         wait(1_500_000//4)
         with for_(qm_j, 0, qm_j < ARRAY_SIZE, qm_j + 1):
@@ -131,9 +134,9 @@ else:
 
     # Set up spectrum analyzer
     spa = KeysightN9010A(InstAddr.spa)
-    spa.centerFreqInHz = qm_config.SPIN_LO + qm_config.SPIN_IF
+    spa.centerFreqInHz = qm_config.SPIN_LO + qm_config.SPIN_IF  
 
-    spa.spanInHz = 5e6
+    spa.spanInHz = 125e6
     spa.resBWInHz = 0.01e6
 
     qm = qmm.open_qm(qm_config.config)
