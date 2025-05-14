@@ -1,15 +1,11 @@
-# spa path
-# from spa_N9010A import SPA_N9010A
 import time
 
-# numpy, matplotlib, pyvisa, scipy, time
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pyvisa as visa
-from Config_debdip.fileio import experiment
+from utils.path_generator import generate_path
 # microwave generator path
-from Config_debdip.logs import initlog
 from qm import QuantumMachinesManager
 # QM
 from qm.qua import *
@@ -17,11 +13,13 @@ from qm.qua import *
 from qualang_tools.loops import from_array
 from qualang_tools.results import fetching_tool, progress_counter
 from Quantum_Machine.qm_configs import *
+from config import inst_addresses
+from config.qm_config
 from scipy import optimize, signal
 from SignalHound_SA.SignalHound import SignalHound
 
 n_average = 5e6
-with program() as IQ_Mixer_Calibration:
+with program() as Mixer_Calibration:
     n = declare(int)
     with while_(True):
         pause()
@@ -102,12 +100,9 @@ def get_newTrace():
 ############
 #   Main   #
 ############
-logger = initlog(type="Experiment").get_logger()
-project_name = "Impedance_Matching_with_DPPH"
-experiment_name = "IQ_Mixer_Calibration"
-exp_path = experiment(project=project_name, exp_name=experiment_name).get_path()
-logger.info("Experiment - IQ_Mixer_Calibration")
-logger.info("Experiment path: {}".format(exp_path))
+project_name = "impedance_matching_dpph"
+experiment_name = "mixer_calibration"
+exp_path = generate_path(project=project_name, exp_name=experiment_name).get_path()
 
 # Load instruments
 rm = visa.ResourceManager()
@@ -133,80 +128,47 @@ phi = 0.05  # these are initial values
 dc_I = 0.02
 dc_Q = -0.02
 
-# mixer_gain = 0.06197836277633909
-# minxer_phase = -0.024094506129622398
-# dc_in_I = -0.02123538254514486
-# dc_in_Q =  -0.02018161319622236
-
 
 set_calib_params(dc_I, dc_Q, g, phi)
 # Execute it on QM
 job = qm.execute(IQ_Mixer_Calibration)
 time.sleep(5)
-metadata = get_newTrace()
+# metadata = get_newTrace()
 before = get_newTrace()
 
 # ## DC calibration
 dc_res = optimize.minimize(
     calib_dc, [dc_I, dc_Q], method="Nelder-Mead", options={"fatol": 0.01}
 )
-logger.debug("dc_I_Q: {}".format(dc_res))
 dc_I = dc_res["x"][0]
 dc_Q = dc_res["x"][1]
 set_calib_params(dc_I, dc_Q, g, phi)
-print("dc done")
-logger.info("Finish DC calibration.")
+print("dc offset calibrated")
 
 # phase calibration
 gPhi_res = optimize.minimize(
     calib_gphi, [g, phi], method="Nelder-Mead", options={"fatol": 0.01}
 )
-logger.debug("g_phi: {}".format(gPhi_res))
 g = gPhi_res["x"][0]
 phi = gPhi_res["x"][1]
 set_calib_params(dc_I, dc_Q, g, phi)
-print("phase done")
+print("gain and phase calibrated")
 print(dc_I)
 print(dc_Q)
 print(g)
 print(phi)
-logger.info("Finish g phi calibration.")
 
 # ## DC calibration
 dc_res = optimize.minimize(calib_dc, [dc_I, dc_Q], method="Nelder-Mead")
-logger.debug("dc_I_Q: {}".format(dc_res))
 dc_I = dc_res["x"][0]
 dc_Q = dc_res["x"][1]
 set_calib_params(dc_I, dc_Q, g, phi)
 print("dc done")
-logger.info("Finish DC calibration.")
 
-# # if needed do extra phase and dec calibration again
-# # phase calibration
-# gPhi_res= optimize.minimize(calib_gphi,[g,phi],method='Nelder-Mead', options={'fatol': 0.01})
-# logger.debug('g_phi: {}'.format(gPhi_res))
-# g= gPhi_res['x'][0]
-# phi = gPhi_res['x'][1]
-# set_calib_params(dc_I,dc_Q,g,phi)
-# print('phase done')
-# print(dc_I)
-# print(dc_Q)
-# print(g)
-# print(phi)
-# logger.info('Finish g phi calibration.')
-
-# # ## DC calibration
-# dc_res = optimize.minimize(calib_dc,[dc_I,dc_Q],method='Nelder-Mead')
-# logger.debug('dc_I_Q: {}'.format(dc_res))
-# dc_I = dc_res['x'][0]
-# dc_Q = dc_res['x'][1]
-# set_calib_params(dc_I,dc_Q,g,phi)
-# print('dc done')
-# logger.info('Finish DC calibration.')
-print("dc_I_offset:", dc_I)
-print("dc_Q_offset", dc_Q)
-print("Mixer gain inbalance:", g)
-print("Mixer phase inbalance:", phi)
+print("dc_I_offset: ", dc_I)
+print("dc_Q_offset: ", dc_Q)
+print("Mixer gain inbalance: ", g)
+print("Mixer phase inbalance: ", phi)
 
 IQ_mix_params = {
     "dc_I": dc_I,
@@ -214,7 +176,6 @@ IQ_mix_params = {
     "g": g,
     "phi": phi,
 }
-logger.debug(IQ_mix_params)
 after = get_newTrace()
 before.to_csv(r"{}/before_calibration.csv".format(exp_path))
 after.to_csv(r"{}/after_calibration.csv".format(exp_path))
