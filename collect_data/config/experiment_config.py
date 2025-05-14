@@ -20,7 +20,7 @@ GHz = u.GHz
 EXPERIMENT_BASE_PATH = Path("/mathieu/data")
 PROJECT_NAME = Path("impedance_matching_dpph")
 # Number of averaged runs
-n_avg = 200
+n_avg = 1000
 
 
 #############
@@ -33,15 +33,15 @@ class QMConfig:
     ####################
     # NV
     spin_if_freq = 100 * MHz
-    spin_if_power = 0 # max 3dBm
+    spin_if_amp = 0.5 # max 0.5V
 
     square_pulse_length = 400  # units of ns, divisible by 4
     gaussian_pulse_length = 400  # units of ns, divisible by 4
     init_pulse_length = 400  # units of ns, divisible by 4
 
-    readout_length = 2000  # units of 1ns, divisible by 4
+    readout_length = 10000  # units of 1ns, divisible by 4
     saturation_pulse_length = 500  # units of 1ns, divisible by 4
-    pi_pulse_length = 452  # units of 1ns, divisible by 4
+    pi_pulse_length = 100  # units of 1ns, divisible by 4
     pi_half_pulse_length = pi_pulse_length  # units of 1ns, divisible by 4
 
 

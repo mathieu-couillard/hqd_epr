@@ -17,7 +17,7 @@ from qualang_tools.units import unit
 from config import qm_config
 from config import InstrumentAddresses as InstAddr
 from config.experiment_config import FreeInductionDecay as FIDconf
-from config.experiment_config import MagConfig, EXPERIMENT_BASE_PATH, n_avg
+from config.experiment_config import MagConfig, MWConfig, EXPERIMENT_BASE_PATH, n_avg
 from config.experiment_config import __file__ as EXPPERIMENT_CONFIG_PATH
 
 from utils import generate_path
@@ -55,16 +55,6 @@ with program() as rt_switch_calibration:
         reset_phase('digitizer')
         reset_frame('spin')
 
-
-        wait(100//4, "spin") # compensate for time of flight
-        play("x90", "spin")
-        wait(2000//4, "spin")
-        frame_rotation_2pi(0.5, "spin")
-        play("x180", "spin")
-        wait(1000//4, 'spin')
-        align("spin", "CryoSw", 'digitizer')
-
-        play('cryosw', "CryoSw")
         measure(
             "readout",
             "digitizer",
@@ -75,6 +65,16 @@ with program() as rt_switch_calibration:
             demod.sliced("sin", qm_I2, CHUNCK_SIZE, "out2"),
         )
 
+        wait(400//4, "spin") # compensate for time of flight
+        play("x90", "spin")
+        wait(2000//4, "spin")
+        frame_rotation_2pi(0.5, "spin")
+        play("x180", "spin")
+        wait(1500//4, 'spin')
+        align("spin", "CryoSw")
+
+        play('cryosw', "CryoSw")
+        wait(1_500_000//4)
         with for_(qm_j, 0, qm_j < ARRAY_SIZE, qm_j + 1):
             assign(qm_I[qm_j], qm_I1[qm_j] + qm_I2[qm_j])
             assign(qm_Q[qm_j], qm_Q1[qm_j] - qm_Q2[qm_j])
@@ -126,8 +126,8 @@ else:
 
     # Set up microwave
     mw_source = KeysightE8247C(InstAddr.mw_source)
-    mw_source.freqInHz = FIDconf.spin_lo_freq #- qm_config.SPIN_IF    
-    mw_source.power_dBm = FIDconf.spin_lo_power
+    mw_source.freqInHz = MWConfig.spin_lo_freq #- qm_config.SPIN_IF    
+    mw_source.power_dBm = MWConfig.spin_lo_power
 
     # Set up spectrum analyzer
     spa = KeysightN9010A(InstAddr.spa)

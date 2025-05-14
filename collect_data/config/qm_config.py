@@ -37,19 +37,19 @@ MIXER_PHASE = 0.02538897782564157
 OUTPUT_OFFSET_I = -0.021664633363113018
 OUTPUT_OFFSET_Q = -0.020055943976947946
 
-INPUT_OFFOUT_I = -0.21271891043526786
-INPUT_OFFOUT_Q = -0.2172443777901786
+INPUT_OFFOUT_I = -0.01455#-0.21271891043526786
+INPUT_OFFOUT_Q = -0.01455#-0.2172443777901786
 
 # details for switch delays
 ANALOG_OUTPUT_DELAY = 200  # QM has 136 ns delay in the analogs line with digital
 
 CRYO_SWITCH_BUFFER = 0
-CRYO_SWITCH_DELAY = 700  # EV1HMC547ALP3
+CRYO_SWITCH_DELAY = 0  # EV1HMC547ALP3
 CRYO_SWITCH_TIME_OF_FLIGHT = 100
 
 
 RT_SWITCH_BUFFER = 0
-RT_SWITCH_DELAY = 252+RT_SWITCH_BUFFER  # EVAL-ADRF5019
+RT_SWITCH_DELAY = 388+RT_SWITCH_BUFFER  # EVAL-ADRF5019
 
 ############################
 # Experiment configuration #
@@ -77,16 +77,10 @@ SMEARING = 0
 # {'out1': 0.21271891043526786, 'out2': 0.2172443777901786}
 
 
-SATURATION_POWER = QMConfig.spin_if_power  # max 3dBm
-PI_POWER = QMConfig.spin_if_power  # max 3dBm
-GAUSSIAN_POWER = QMConfig.spin_if_power  # max 3dBm
-
 # calculate the peak voltage
-saturation_wf_amp = (
-    np.sqrt(2) * np.sqrt((50 / 1000) * (10 ** (SATURATION_POWER / 10)))
-) / 2.0
-pi_amp = np.sqrt(2) * np.sqrt((50 / 1000) * (10 ** (PI_POWER / 10)))
-gaussian_amp = np.sqrt(2) * np.sqrt((50 / 1000) * (10 ** (GAUSSIAN_POWER / 10)))
+saturation_wf_amp = QMConfig.spin_if_amp
+pi_amp = QMConfig.spin_if_amp
+gaussian_amp = QMConfig.spin_if_amp
 pi_half_amp = pi_amp / 2.0
 
 #################
