@@ -1,22 +1,21 @@
 import time
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pyvisa as visa
-from utils.path_generator import generate_path
 # microwave generator path
 from qm import QuantumMachinesManager
-# QM
 from qm.qua import *
-# for QM
 from qualang_tools.loops import from_array
 from qualang_tools.results import fetching_tool, progress_counter
-from Quantum_Machine.qm_configs import *
-from config import inst_addresses
-from config.qm_config
 from scipy import optimize, signal
 from SignalHound_SA.SignalHound import SignalHound
+
+from config import inst_addresses, qm_config
+from config.qm_configs import *
+from utils.path_generator import generate_path
 
 n_average = 5e6
 with program() as Mixer_Calibration:
@@ -52,13 +51,11 @@ def calib_dc(dc_iq):
     return 10 ** ((valuemarker1 - valuemarker2) / 10)
 
 
-def calib_gphi(gphi):
+def calc_g_and_phi(g_phi):
     while not job.is_paused():
         time.sleep(0.1)
-    print(gphi[0])
-    print(gphi[1])
     qm.set_mixer_correction(
-        "mixer_spin", int(spin_IF), int(spin_LO), IQ_imbalance(gphi[0], gphi[1])
+        "mixer_spin1", int(SPIN_IF), int(SPIN_LO), IQ_imbalance(g_phi[0], g_phi[1])
     )
 
     while not job.is_paused():
@@ -77,10 +74,8 @@ def calib_gphi(gphi):
     return 10 ** ((valuemarker3 - valuemarker2) / 10)
 
 
-def set_calib_params(dc_I, dc_Q, g, phi):
-    qm.set_mixer_correction(
-        "mixer_spin", int(spin_IF), int(spin_LO), IQ_imbalance(g, phi)
-    )
+def set_calib_params(mixer: str, dc_I: int, dc_Q: int, g: int, phi: int):
+    qm.set_mixer_correction(mixer, int(SPIN_IF), int(SPIN_LO), IQ_imbalance(g, phi))
     qm.set_output_dc_offset_by_element("spin", "I", dc_I)
 
     qm.set_output_dc_offset_by_element("spin", "Q", dc_Q)
@@ -89,7 +84,7 @@ def set_calib_params(dc_I, dc_Q, g, phi):
 # for the trace collection get_trace
 
 
-def get_newTrace():
+def get_spa_trace():
     while not job.is_paused():
         time.sleep(0.1)
     job.resume()
@@ -102,7 +97,7 @@ def get_newTrace():
 ############
 project_name = "impedance_matching_dpph"
 experiment_name = "mixer_calibration"
-exp_path = generate_path(project=project_name, exp_name=experiment_name).get_path()
+exp_path = generate_path(project=project_name, exp_name=experiment_name)
 
 # Load instruments
 rm = visa.ResourceManager()
@@ -122,6 +117,9 @@ spa.ref_level(20)
 spa.set_marker(freq=spin_LO, marker=1)
 spa.set_marker(freq=spin_LO + spin_IF, marker=2)
 spa.set_marker(freq=spin_LO - spin_IF, marker=3)
+
+
+mixer_name = "mixer_spin1"
 # Initaial Guesses and set the parameter
 g = -0.02
 phi = 0.05  # these are initial values
@@ -129,40 +127,32 @@ dc_I = 0.02
 dc_Q = -0.02
 
 
-set_calib_params(dc_I, dc_Q, g, phi)
-# Execute it on QM
-job = qm.execute(IQ_Mixer_Calibration)
+set_calib_params(mixer, dc_I, dc_Q, g, phi)
+job = qm.execute(Mixer_Calibration)
 time.sleep(5)
-# metadata = get_newTrace()
-before = get_newTrace()
 
-# ## DC calibration
+# ## DC calibration 1
 dc_res = optimize.minimize(
     calib_dc, [dc_I, dc_Q], method="Nelder-Mead", options={"fatol": 0.01}
 )
 dc_I = dc_res["x"][0]
 dc_Q = dc_res["x"][1]
-set_calib_params(dc_I, dc_Q, g, phi)
+set_calib_params(mixer, dc_I, dc_Q, g, phi)
 print("dc offset calibrated")
 
-# phase calibration
-gPhi_res = optimize.minimize(
-    calib_gphi, [g, phi], method="Nelder-Mead", options={"fatol": 0.01}
+# gain and phase calibration 1
+g_phi_optimized = optimize.minimize(
+    calc_g_and_phi, [g, phi], method="Nelder-Mead", options={"fatol": 0.01}
 )
-g = gPhi_res["x"][0]
-phi = gPhi_res["x"][1]
-set_calib_params(dc_I, dc_Q, g, phi)
-print("gain and phase calibrated")
-print(dc_I)
-print(dc_Q)
-print(g)
-print(phi)
+g = g_phi_optimized["x"][0]
+phi = g_phi_optimized["x"][1]
+set_calib_params(mixer_name, dc_I, dc_Q, g, phi)
 
-# ## DC calibration
+# ## DC calibration 2
 dc_res = optimize.minimize(calib_dc, [dc_I, dc_Q], method="Nelder-Mead")
 dc_I = dc_res["x"][0]
 dc_Q = dc_res["x"][1]
-set_calib_params(dc_I, dc_Q, g, phi)
+set_calib_params(mixer_name, dc_I, dc_Q, g, phi)
 print("dc done")
 
 print("dc_I_offset: ", dc_I)
@@ -176,30 +166,20 @@ IQ_mix_params = {
     "g": g,
     "phi": phi,
 }
-after = get_newTrace()
-before.to_csv(r"{}/before_calibration.csv".format(exp_path))
-after.to_csv(r"{}/after_calibration.csv".format(exp_path))
-
-
-# for the final plot (read the data and plot)
-data1 = pd.read_csv(r"{}/before_calibration.csv".format(exp_path))
-data2 = pd.read_csv(r"{}/after_calibration.csv".format(exp_path))
+data = get_spa_trace()
+path = Path(f"{exp_path}/calibrated_iq_mixer_data.csv")
+data.to_csv(path)
+# Test this. It might be a useless line assuming the data
+# is formated properly.
+data = pd.read_csv(path)
 
 # Plot the save data
-fig, (ax1, ax2) = plt.subplots(2, figsize=(8, 10))
-ax1.plot(data1["frequency"], data1["power(dbm)"], label="Before Calibration")
-ax1.set_title("Before Calibration")
-ax1.set_xlabel("Frequency[GHz]")
-ax1.set_ylabel("power(dBm)")
-ax1.legend()
-ax1.grid()
-
-ax2.plot(data2["frequency"], data2["power(dbm)"], label="After Calibration")
-ax2.set_title("After Calibration")
-ax2.set_xlabel("Frequency[GHz]")
-ax2.set_ylabel("power(dBm)")
-ax2.legend()
-ax2.grid()
-plt.savefig("{}/Calibration.png".format(exp_path))
-plt.savefig("{}/Calibration.svg".format(exp_path))
+plt.plot(data["frequency"], data["power(dbm)"], label="After Calibration")
+plt.title("After Calibration")
+plt.xlabel("Frequency[GHz]")
+plt.ylabel("power(dBm)")
+plt.legend()
+plt.grid()
+plt.savefig((exp_path / "Calibration.png"))
+plt.savefig((exp_path / "Calibration.svg"))
 plt.show()

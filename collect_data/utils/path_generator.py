@@ -1,10 +1,10 @@
 # import os  # Replace this with pathlib
 from datetime import datetime
+from os import PathLike
 from pathlib import Path
 
 
-
-def generate_path(project, exp_name, basepath, new=True):
+def generate_path(project: str, exp_name: str, basepath: str) -> PathLike:
     """Create sub-directories for saving experimental data.
 
     Args:
@@ -25,23 +25,15 @@ def generate_path(project, exp_name, basepath, new=True):
         and time.
 
     """
-    if new:
-        current_time = datetime.now()
-        hour_min_sec = current_time.strftime("_%H-%M-%S")  # _%d-%m-%y
-        year_month = current_time.strftime("%Y-%m")
-        date = current_time.strftime("%d")
-        exp_name = exp_name + hour_min_sec
-        project = project
-        path = (
-            Path.cwd()
-            / basepath
-            / project
-            / year_month
-            / date
-            / exp_name
-        )
-        if path.exists():
-            path = path.parent / (path.stem + current_time.strftime('-%f'))
-        path.mkdir(parents=True, exist_ok=True)
+    current_time = datetime.now()
+    hour_min_sec = current_time.strftime("_%H-%M-%S")  # _%d-%m-%y
+    year_month = current_time.strftime("%Y-%m")
+    date = current_time.strftime("%d")
+    exp_name = exp_name + hour_min_sec
+    project = project
+    path = Path.cwd() / basepath / project / year_month / date / exp_name
+    if path.exists():
+        path = path.parent / (path.stem + current_time.strftime("-%f"))
+    path.mkdir(parents=True, exist_ok=True)
 
-        return path
+    return path
