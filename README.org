@@ -1,4 +1,4 @@
-#+TITLE: Experimental Physics Data Collection & Analysis Scripts
+#+TITLE: hqd_epr: Experimental EPR & Quantum Memory Analysis
 #+AUTHOR: Mathieu Couillard
 #+OPTIONS: toc:nil num:nil
 
@@ -12,10 +12,43 @@
 #+end_export
 
 ** Note on Maintenance
-This repository is a static archive of the scripts used during my doctoral research. It is provided "as-is" for the purpose of transparency and academic review. *I do not intend to maintain, update, or provide support for this codebase.*
+This repository is a static archive of scripts developed during my doctoral research at the Okinawa Institute of Science and Technology (OIST). It is provided "as-is" for academic review and reproducibility purposes.
 
-* Usage
-As this is an archived collection, these scripts are intended to be read as a reference for the methodology used in the associated thesis. While they can be executed, they may require specific laboratory hardware paths or environment configurations that are no longer active.
+* Overview
+=hqd_epr= contains Python tools for processing and modeling experimental Electron Paramagnetic Resonance (EPR) data, specifically focusing on spin ensembles (DPPH) coupled to superconducting/dielectric resonators.
+
+Key features include:
+- *2D Spectroscopy Fitting:* Implementation of Dissipative Coupled Mode Theory to fit reflection data ($S_{11}$) and extract coupling strength ($g$), spin broadening ($\gamma$), and cavity decay rates ($\kappa$).
+- *Resonator Characterization:* Tools for phase calibration and fitting of resonator Quality factors ($Q_{int}$, $Q_{ext}$).
+- *Automated Visualization:* Generation of publication-quality 2D heatmaps with oblique frequency lines for Zeeman splitting tracking.
+
+* Repository Structure
+- =analyze_data/= :: Core analysis logic.
+  - =fit_2d_spectrum.py= : Fits 2D spectroscopic data using complex reflection models.
+  - =freq_mag_field_2d.py= : Generates background-subtracted heatmaps.
+  - =resonator_characterization.py= : Extracts cavity parameters from VNA traces.
+  - =utils.py= : Common physics utility functions (dB conversions, phase models).
+- =data/= :: (Expected) Directory for CSV spectroscopic data.
+
+* Dependencies
+The project requires Python 3.9+ and the following scientific library stack:
+- =numpy= & =scipy= : Numerical optimization and `curve_fit`.
+- =pandas= : CSV data handling and alignment.
+- =matplotlib= : 2D plotting and heatmap generation.
+
+* Installation & Usage
+To set up the environment and install the package in editable mode:
+
+#+begin_src bash
+python -m venv venv
+source venv/bin/activate
+pip install -e .
+#+end_src
+
+To run a 2D fit:
+#+begin_src bash
+python analyze_data/fit_2d_spectrum.py
+#+end_src
 
 * License
-This project is licensed under the Apache License, =Version 2.0= (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
+Licensed under the Apache License, =Version 2.0=.

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hqd_epr"
+version = "1.0.0"
+description = "Analysis scripts for experimental EPR and spin-ensemble quantum memory research."
+readme = "README.org"
+requires-python = ">=3.9"
+authors = [
+    { name = "Mathieu Couillard" }
+]
+license = { text = "Apache-2.0" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Intended Audience :: Science/Research",
+]
+dependencies = [
+    "numpy>=1.22.0",
+    "scipy>=1.8.0",
+    "matplotlib>=3.5.0",
+    "pandas>=1.4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/mathieu-couillard/hqd_epr"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["analyze_data*"]
