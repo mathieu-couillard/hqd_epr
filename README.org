@@ -12,42 +12,29 @@
 #+end_export
 
 ** Note on Maintenance
-This repository is a static archive of scripts developed during my doctoral research at the Okinawa Institute of Science and Technology (OIST). It is provided "as-is" for academic review and reproducibility purposes.
+This repository is a static archive of scripts developed during my doctoral research at OIST. It is provided "as-is" for academic review.
 
 * Overview
-=hqd_epr= contains Python tools for processing and modeling experimental Electron Paramagnetic Resonance (EPR) data, specifically focusing on spin ensembles (DPPH) coupled to superconducting/dielectric resonators.
-
-Key features include:
-- *2D Spectroscopy Fitting:* Implementation of Dissipative Coupled Mode Theory to fit reflection data ($S_{11}$) and extract coupling strength ($g$), spin broadening ($\gamma$), and cavity decay rates ($\kappa$).
-- *Resonator Characterization:* Tools for phase calibration and fitting of resonator Quality factors ($Q_{int}$, $Q_{ext}$).
-- *Automated Visualization:* Generation of publication-quality 2D heatmaps with oblique frequency lines for Zeeman splitting tracking.
+=hqd_epr= provides a full pipeline for experimental quantum information physics, from hardware-level data collection to sophisticated physical modeling of spin ensembles.
 
 * Repository Structure
+- =acquisition/= :: Scripts for automated data collection.
+  - Interfacing with VNAs for frequency sweeps.
+  - Automated Magnetic field (B-field) scanning and gradient control.
+  - Raw data logging to CSV format.
 - =analyze_data/= :: Core analysis logic.
-  - =fit_2d_spectrum.py= : Fits 2D spectroscopic data using complex reflection models.
-  - =freq_mag_field_2d.py= : Generates background-subtracted heatmaps.
-  - =resonator_characterization.py= : Extracts cavity parameters from VNA traces.
-  - =utils.py= : Common physics utility functions (dB conversions, phase models).
-- =data/= :: (Expected) Directory for CSV spectroscopic data.
+  - =fit_2d_spectrum.py= : Fits 2D data using Dissipative Coupled Mode Theory.
+  - =resonator_characterization.py= : Extracts $Q$ factors and cavity parameters.
+  - =utils.py= : Physical utility functions.
 
 * Dependencies
-The project requires Python 3.9+ and the following scientific library stack:
-- =numpy= & =scipy= : Numerical optimization and `curve_fit`.
-- =pandas= : CSV data handling and alignment.
-- =matplotlib= : 2D plotting and heatmap generation.
+- =python= (>= 3.9)
+- =numpy=, =scipy=, =pandas=, =matplotlib= :: The scientific computing stack.
+- =pyvisa= :: For instrument control (GPIB/Ethernet) in the =acquisition= scripts.
 
-* Installation & Usage
-To set up the environment and install the package in editable mode:
-
+* Installation
 #+begin_src bash
-python -m venv venv
-source venv/bin/activate
 pip install -e .
-#+end_src
-
-To run a 2D fit:
-#+begin_src bash
-python analyze_data/fit_2d_spectrum.py
 #+end_src
 
 * License
