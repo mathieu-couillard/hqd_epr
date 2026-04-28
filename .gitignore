@@ -1,0 +1,13 @@
+# emacs
+*.~undo-tree~
+*.mypy_cache
+*.ropeproject
+*\#*
+*~
+.venv
+
+
+# data
+*.csv
+*.h5
+*/Data/*

@@ -1,0 +1,230 @@
+import pyvisa as visa
+from time import sleep
+
+
+class AMI430:
+    def __init__(self, addr):
+        """
+        This class is for the AMI430 magnet controller.
+        This is only written with keep in mind
+        that the user never needs second or third segment.
+        If needs to use second or third segment,
+        please modify the code accordingly as user needs.
+        
+        """
+
+        self._inst = visa.ResourceManager('@py').open_resource(addr)
+        self._inst.read_termination = "\r\n"
+        
+        self._name = self._query("*IDN?")
+   
+        self.config = {
+            'name':self._name,
+            'IP':addr,
+        }
+        print(self._read())
+        print(self._read())
+    
+    def get_config(self):
+
+        self.config['params'] = {
+            'coil_constant':self.coil_constant,
+            'current_limit':self.current_limit,
+            'voltage_limit':self.voltage_limit,
+            'target_current':self.target_current,
+            'target_field':self.target_field,
+            'ramp_rate_units':self.ramp_rate_units,
+            'field_units':self.field_units,
+            'magnet_current':self.magnet_current,
+            'supply_current':self.supply_current,
+            'magnetic_field':self.magnetic_field,
+            'state': self.state,
+            'field_limit': self.field_limit
+            }
+        return self.config
+
+    ##############################
+    # Attributes
+    ##############################
+
+    @property
+    def coil_constant(self):
+        return float(self._query("COIL?"))
+
+    @coil_constant.setter
+    def coil_constant(self, const):
+        self._write("CONF:COIL {}".format(const))
+    
+    @property
+    def current_limit(self):
+        self._current_limit = self._query("CURR:LIM?")
+        return float(self._current_limit)
+
+    @property
+    def voltage_limit(self):
+        self._voltage_limit = self._query("VOLT:LIM?")
+        return self._voltage_limit
+
+    @voltage_limit.setter
+    def voltage_limit(self, lim):
+        self._write("CONF:VOLT:LIM {}".format(lim))
+
+    @property
+    def target_current(self):
+        return self._query("CURR:TARG?")
+
+    @target_current.setter
+    def target_current(self, curr):
+        #TODO: exception for out of range of magnets
+        self._write("CONF:CURR:TARG {}".format(round(curr, 7)))
+
+    @property
+    def target_field(self):
+        return self._query("FIELD:TARG?")
+
+    @target_field.setter
+    def target_field(self, field):
+        self._write("CONF:FIELD:TARG {}".format(field))
+
+    @property
+    def ramp_rate_units(self):
+        return self._query("RAMP:RATE:UNITS?")
+
+    @ramp_rate_units.setter
+    def ramp_rate_units(self, units):
+        if units == "seconds" or units == 0:
+            self._write('CONFigure:RAMP:RATE:UNITS {}'.format(0))
+        elif units == "minutes" or units == 1:
+            self._write('CONFigure:RAMP:RATE:UNITS {}'.format(1))
+   
+    @property
+    def ramp_rate(self):
+        _ramp_rate =  [float(i) for i in self._query("RAMP:RATE:FIELD:1?").split(',')]
+        return _ramp_rate
+
+
+
+    @ramp_rate.setter
+    def ramp_rate(self, rate):
+        """ The ramp rate can only be set for the first segment of the magnet. """ 
+        if self.ramp_rate_units == '0':
+            if rate > 0.107*self.coil_constant:
+                return
+            
+            self._write('CONF:RAMP:RATE:SEG 1')
+            self._write('CONF:RAMP:RATE:FIELD 1,{},{}'.format(rate, self.ramp_rate[-1]))
+        
+        elif self.ramp_rate_units == '1':
+            if rate > 0.107*self.coil_constant/60:
+                return
+            
+            self._write('CONF:RAMP:RATE:SEG 1')
+            self._write('CONF:RAMP:RATE:FIELD 1,{},0'.format(rate))
+
+
+    @property
+    def field_units(self):
+        return self._query("FIELD:UNITS?")
+
+    @field_units.setter
+    def field_units(self, units):
+        if units == "kilogauss" or units == 0:
+            self._write('CONFigure:FIELD:UNITS {}'.format(0))
+        elif units == "tesla" or units == 1:
+            self._write('CONFigure:FIELD:UNITS {}'.format(1))
+
+    @property
+    def magnet_current(self):
+        return self._query("CURR:MAG?")
+
+    @property
+    def supply_current(self):
+        return self._query("CURR:SUPP?")
+
+    @property
+    def magnetic_field(self):
+        return self._query("FIELD:MAG?")
+
+    @property
+    def state(self):
+        STATES = {
+            1: "RAMPING",
+            2: "HOLDING",
+            3: "PAUSED",
+            4: "MANUAL UP",
+            5: "MANUAL DOWN",
+            6: "ZEROING CURRENT",
+            7: "QUENCH detected",
+            8: "AT ZERO CURRENT",
+            9: "Heating Persistent Switch",
+            10: "Cooling Persistent Switch"
+        }
+        return STATES[int(self._query("STATE?"))]
+
+    ##############################
+    # Methods
+    ##############################
+
+
+    def identify(self):
+        return self._query("*IDN?")
+
+    def operation_complete(self):
+        return self._query("*OPC?")
+
+    def ramp(self):
+        self._write('ramp')
+
+    def pause(self):
+        self._write('pause')
+
+    def zero(self):
+        self._write('zero')
+
+    def can_start_ramp(self):
+        if float(self._query("QU?")) == 1: #check for quench
+            print ("Could not ramp due to quench")
+            return False
+            
+        state = self.state
+        if state == "RAMPING":
+            print ("YOU ARE ALREADY RAMPING")
+            return False
+        elif state == "HOLDING" or "PAUSED" or "AT ZERO CURRENT":
+            return True
+        
+        return False
+
+    @property
+    def field_limit(self):
+        field_lim = float(self.coil_constant)*float(self.current_limit)
+        return field_lim
+    
+
+    # def set_field(self):
+    #
+    # def set_current(self):
+    #
+    # def shutdown(self):
+    #     # set current to zero
+    #     #
+
+    ##############################
+    # Methods that send commands
+    ##############################
+    def _write(self, cmd):
+        self._inst.write(cmd)
+
+    def _read(self):
+        return self._inst.read()
+
+    def _query(self, cmd):
+        return self._inst.query(cmd)
+
+if __name__ == "__main__":
+    #TODO: get addresses of magnets using *IDN?
+    rm = visa.ResourceManager()
+    resources = rm.list_resources()
+
+    mag = AMI430("TCPIP0::192.168.0.113::7180::SOCKET")
+    print(mag.identify())

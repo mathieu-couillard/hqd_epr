@@ -1,0 +1,21 @@
+#+TITLE: Experimental Physics Data Collection & Analysis Scripts
+#+AUTHOR: Mathieu Couillard
+#+OPTIONS: toc:nil num:nil
+
+* Status: Archived
+
+#+begin_export html
+<p align="left">
+  <img src="https://img.shields.io/badge/Status-Archived-red.svg" alt="Status: Archived">
+  <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License: Apache 2.0">
+</p>
+#+end_export
+
+** Note on Maintenance
+This repository is a static archive of the scripts used during my doctoral research. It is provided "as-is" for the purpose of transparency and academic review. *I do not intend to maintain, update, or provide support for this codebase.*
+
+* Usage
+As this is an archived collection, these scripts are intended to be read as a reference for the methodology used in the associated thesis. While they can be executed, they may require specific laboratory hardware paths or environment configurations that are no longer active.
+
+* License
+This project is licensed under the Apache License, =Version 2.0= (the "License"). You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
