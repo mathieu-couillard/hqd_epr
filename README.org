@@ -22,7 +22,7 @@ This repository is a static archive of scripts developed during my doctoral rese
   - Interfacing with VNAs for frequency sweeps.
   - Automated Magnetic field (B-field) scanning and gradient control.
   - Raw data logging to CSV format.
-- =analyze_data/= :: Core analysis logic.
+- =analysis/= :: Core analysis logic.
   - =fit_2d_spectrum.py= : Fits 2D data using Dissipative Coupled Mode Theory.
   - =resonator_characterization.py= : Extracts $Q$ factors and cavity parameters.
   - =utils.py= : Physical utility functions.

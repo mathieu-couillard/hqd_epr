@@ -30,4 +30,4 @@ Homepage = "https://github.com/mathieu-couillard/hqd_epr"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["analyze_data*", "acquisition*"]
+include = ["analysis*", "acquisition*"]
